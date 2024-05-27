@@ -6,85 +6,94 @@ namespace TickSystem.Core
 	{
 		public bool active = true;
 
-		public IReadOnlyList<TickGroup> TickGroups => _tickGroups;
-		
-		// TODO: merge into List<KeyValuePair<TickGroup, float>>
-		private readonly List<TickGroup> _tickGroups;
-		private readonly List<float> _timers;
+		public IReadOnlyList<TickGroup> TickGroups => _groupsAndTimers.ConvertAll(pair => pair.Key);
+
+		private readonly List<MutableKeyValuePair<TickGroup, float>> _groupsAndTimers;
 
 		#region Constructors
 
 		public Ticker(bool active, IEnumerable<TickGroup> tickGroups)
 		{
 			this.active = active;
-			_tickGroups = new List<TickGroup>(tickGroups);
-			_timers = MakeDefaultTimers(_tickGroups.Count);
+			_groupsAndTimers = new List<MutableKeyValuePair<TickGroup, float>>();
+			foreach (var tickGroup in tickGroups)
+			{
+				_groupsAndTimers.Add(new MutableKeyValuePair<TickGroup, float>(tickGroup, 0f));
+			}
 		}
 		
 		public Ticker(bool active, params TickGroup[] tickGroups)
 		{
 			this.active = active;
-			_tickGroups = new List<TickGroup>(tickGroups);
-			_timers = MakeDefaultTimers(_tickGroups.Count);
+			_groupsAndTimers = new List<MutableKeyValuePair<TickGroup, float>>();
+			foreach (var tickGroup in tickGroups)
+			{
+				_groupsAndTimers.Add(new MutableKeyValuePair<TickGroup, float>(tickGroup, 0f));
+			}
 		}
 
 		public Ticker(bool active)
 		{
 			this.active = active;
-			_tickGroups = new List<TickGroup>();
-			_timers = new List<float>();
+			_groupsAndTimers = new List<MutableKeyValuePair<TickGroup, float>>();
 		}
 
 		public Ticker(IEnumerable<TickGroup> tickGroups)
 		{
-			_tickGroups = new List<TickGroup>(tickGroups);
-			_timers = MakeDefaultTimers(_tickGroups.Count);
+			_groupsAndTimers = new List<MutableKeyValuePair<TickGroup, float>>();
+			foreach (var tickGroup in tickGroups)
+			{
+				_groupsAndTimers.Add(new MutableKeyValuePair<TickGroup, float>(tickGroup, 0f));
+			}
 		}
 		
 		public Ticker(params TickGroup[] tickGroups)
 		{
-			_tickGroups = new List<TickGroup>(tickGroups);
-			_timers = MakeDefaultTimers(_tickGroups.Count);
+			_groupsAndTimers = new List<MutableKeyValuePair<TickGroup, float>>();
+			foreach (var tickGroup in tickGroups)
+			{
+				_groupsAndTimers.Add(new MutableKeyValuePair<TickGroup, float>(tickGroup, 0f));
+			}
 		}
 		
 		public Ticker()
 		{
-			_tickGroups = new List<TickGroup>();
-			_timers = new List<float>();
+			_groupsAndTimers = new List<MutableKeyValuePair<TickGroup, float>>();
 		}
 
 		#endregion
 		
 		public void Add(TickGroup tickGroup)
 		{
-			if (_tickGroups.Contains(tickGroup)) return;
-			_tickGroups.Add(tickGroup);
-			_timers.Add(0f);
+			if (tickGroup == null) return;
+			if (_groupsAndTimers.Exists(pair => pair.Key == tickGroup)) return;
+			_groupsAndTimers.Add(new MutableKeyValuePair<TickGroup, float>(tickGroup, 0f));
 		}
 		
 		public void Remove(TickGroup tickGroup)
 		{
-			// Essentially a !Contains() check,
-			// but we now have the index for both lists
-			int index = _tickGroups.IndexOf(tickGroup);
-			if (index < 0) return; // -1 means not found
-			
-			_tickGroups.RemoveAt(index);
-			_timers.RemoveAt(index);
+			if (tickGroup == null) return;
+			if (!_groupsAndTimers.Exists(pair => pair.Key == tickGroup)) return;
+			_groupsAndTimers.RemoveAll(pair => pair.Key == tickGroup);
 		}
 		
 		public void Clear()
 		{
-			if (_tickGroups.Count == 0) return;
-			_tickGroups.Clear();
-			_timers.Clear();
+			if (_groupsAndTimers.Count == 0) return;
+			foreach (var mutableKeyValuePair in _groupsAndTimers)
+			{
+				// Clear the tick group's callbacks
+				mutableKeyValuePair.Key.Clear();
+			}
+			_groupsAndTimers.Clear();
 		}
 		
 		public void ResetTimers()
 		{
-			for (int i = 0; i < _timers.Count; i++)
+			if (_groupsAndTimers.Count == 0) return;
+			foreach (var mutableKeyValuePair in _groupsAndTimers)
 			{
-				_timers[i] = 0f;
+				mutableKeyValuePair.Value = 0f;
 			}
 		}
 		
@@ -93,62 +102,32 @@ namespace TickSystem.Core
 		// as to keep the class independent from any Unity APIs
 		public void Update(float dt, float udt)
 		{
+			// Skip if the ticker is inactive
 			if (!active) return;
 			
-			int count = MatchListLengths();
-			if (count == 0) return;
-			
-			for (int i = 0; i < count; i++)
+			for (int i = 0; i < _groupsAndTimers.Count; i++)
 			{
-				if (!_tickGroups[i].Parameters.active) continue;
-				if (_tickGroups[i].Parameters.tickRate <= 0) continue;
+				// Skip inactive tick groups
+				if (!_groupsAndTimers[i].Key.Parameters.active) continue;
 				
-				if (_tickGroups[i].Parameters.useRealTime)
+				// Skip tick groups with a tick rate of 0
+				if (_groupsAndTimers[i].Key.Parameters.tickRate <= 0) continue;
+				
+				// Branching based on real-time or unscaled time
+				if (_groupsAndTimers[i].Key.Parameters.useRealTime)
 				{
-					if (_timers[i] + udt < 1f / _tickGroups[i].Parameters.tickRate) continue;
+					if ((_groupsAndTimers[i].Value += udt) < (1f / _groupsAndTimers[i].Key.Parameters.tickRate)) continue;
 				}
 				else
 				{
-					if (_timers[i] + dt < 1f / _tickGroups[i].Parameters.tickRate) continue;
+					if ((_groupsAndTimers[i].Value += dt) < (1f / _groupsAndTimers[i].Key.Parameters.tickRate)) continue;
 				}
 				
-				_tickGroups[i].Invoke();
-				_timers[i] = 0f;
+				// Reset the timer and invoke the tick group's callbacks
+				_groupsAndTimers[i].Value = 0f;
+				_groupsAndTimers[i].Key.Invoke();
 			}
 		}
-		
-		private int MatchListLengths()
-		{
-			if (_tickGroups.Count == _timers.Count) return _timers.Count;
-			
-			if (_tickGroups.Count > _timers.Count)
-			{
-				int difference = _tickGroups.Count - _timers.Count;
-				for (int i = 0; i < difference; i++)
-				{
-					_timers.Add(0f);
-				}
-			}
-			else if (_timers.Count > _tickGroups.Count)
-			{
-				int difference = _timers.Count - _tickGroups.Count;
-				for (int i = 0; i < difference; i++)
-				{
-					_timers.RemoveAt(_timers.Count - 1);
-				}
-			}
-			
-			return _timers.Count;
-		}
-		
-		private List<float> MakeDefaultTimers(int count)
-		{
-			List<float> timers = new List<float>();
-			for (int i = 0; i < count; i++)
-			{
-				timers.Add(0f);
-			}
-			return timers;
-		}
+
 	}
 }

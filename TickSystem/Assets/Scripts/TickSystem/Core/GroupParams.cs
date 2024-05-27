@@ -31,5 +31,13 @@ namespace TickSystem.Core
 			this.active = true;
 			this.useRealTime = false;
 		}
+		
+		public void CopyFrom(GroupParams other)
+		{
+			name = other.name;
+			tickRate = other.tickRate;
+			active = other.active;
+			useRealTime = other.useRealTime;
+		}
 	}
 }

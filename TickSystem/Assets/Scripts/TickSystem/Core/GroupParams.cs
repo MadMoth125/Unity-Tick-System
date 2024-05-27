@@ -1,3 +1,4 @@
+using System;
 
 namespace TickSystem.Core
 {
@@ -40,6 +41,30 @@ namespace TickSystem.Core
 			tickRate = other.tickRate;
 			active = other.active;
 			useRealTime = other.useRealTime;
+		}
+		
+		public override string ToString()
+		{
+			return $"[{name}, {tickRate}, {active}, {useRealTime}]";
+		}
+		
+		public override bool Equals(object obj)
+		{
+			if (obj is GroupParams other)
+			{
+				return name == other.name && tickRate == other.tickRate && active == other.active && useRealTime == other.useRealTime;
+			}
+			return false;
+		}
+
+		public bool Equals(GroupParams other)
+		{
+			return name == other.name && tickRate == other.tickRate && active == other.active && useRealTime == other.useRealTime;
+		}
+
+		public override int GetHashCode()
+		{
+			return HashCode.Combine(name, tickRate, active, useRealTime);
 		}
 	}
 }

@@ -6,12 +6,16 @@ namespace TickSystem
 	[CreateAssetMenu(fileName = "NewTickGroup", menuName = "Tick System/Tick Group")]
 	public class TickGroupAsset : ScriptableObject
 	{
+		[Tooltip("Whether the tick group is active.")]
 		[SerializeField]
 		public bool active = true;
 
+		[Tooltip("Whether the tick group uses real time.\n" +
+		         "If false, it uses game time.")]
 		[SerializeField]
 		public bool useRealTime = false;
 
+		[Tooltip("The number of ticks per second.")]
 		[Range(1, 60)]
 		[SerializeField]
 		public int tickRate = 20;
@@ -33,6 +37,11 @@ namespace TickSystem
 			
 			_tickGroup.Parameters.CopyFrom(GetGroupParams());
 			return _tickGroup;
+		}
+
+		private void OnDisable()
+		{
+			_tickGroup?.Clear();
 		}
 	}
 }

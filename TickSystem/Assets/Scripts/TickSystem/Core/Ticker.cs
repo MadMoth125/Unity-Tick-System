@@ -133,16 +133,16 @@ namespace TickSystem.Core
 				if (!_groupsAndTimers[i].Key.Parameters.active) continue;
 				
 				// Skip tick groups with a tick rate of 0
-				if (_groupsAndTimers[i].Key.Parameters.tickRate <= 0) continue;
+				if (_groupsAndTimers[i].Key.Parameters.interval <= 0) continue;
 				
 				// Branching based on real-time or unscaled time
 				if (_groupsAndTimers[i].Key.Parameters.useRealTime)
 				{
-					if ((_groupsAndTimers[i].Value += udt) < (1f / _groupsAndTimers[i].Key.Parameters.tickRate)) continue;
+					if ((_groupsAndTimers[i].Value += udt) < _groupsAndTimers[i].Key.Parameters.interval) continue;
 				}
 				else
 				{
-					if ((_groupsAndTimers[i].Value += dt) < (1f / _groupsAndTimers[i].Key.Parameters.tickRate)) continue;
+					if ((_groupsAndTimers[i].Value += dt) < _groupsAndTimers[i].Key.Parameters.interval) continue;
 				}
 				
 				// Reset the timer and invoke the tick group's callbacks

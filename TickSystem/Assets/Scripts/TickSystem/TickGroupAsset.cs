@@ -20,7 +20,7 @@ namespace TickSystem
 		
 		public GroupParams GetGroupParams()
 		{
-			return new GroupParams(name, tickRate, active, useRealTime);
+			return new GroupParams(name, 1f / tickRate, active, useRealTime);
 		}
 		
 		public TickGroup GetTickGroup()

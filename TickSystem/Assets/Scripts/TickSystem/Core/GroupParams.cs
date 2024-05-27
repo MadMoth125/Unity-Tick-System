@@ -6,34 +6,34 @@ namespace TickSystem.Core
 	public struct GroupParams
 	{
 		public string name;
-		public int tickRate;
+		public float interval;
 		public bool active;
 		public bool useRealTime;
 		
-		public static GroupParams Default => new GroupParams("TickGroup", 20, true, false);
+		public static GroupParams Default => new GroupParams("TickGroup", 0.05f, true, false);
 
 		#region Constructors
 
-		public GroupParams(string name, int tickRate, bool active, bool useRealTime)
+		public GroupParams(string name, float interval, bool active, bool useRealTime)
 		{
 			this.name = name;
-			this.tickRate = tickRate;
+			this.interval = interval;
 			this.active = active;
 			this.useRealTime = useRealTime;
 		}
 		
-		public GroupParams(string name, int tickRate, bool active)
+		public GroupParams(string name, float interval, bool active)
 		{
 			this.name = name;
-			this.tickRate = tickRate;
+			this.interval = interval;
 			this.active = active;
 			this.useRealTime = false;
 		}
 		
-		public GroupParams(string name, int tickRate)
+		public GroupParams(string name, float interval)
 		{
 			this.name = name;
-			this.tickRate = tickRate;
+			this.interval = interval;
 			this.active = true;
 			this.useRealTime = false;
 		}
@@ -47,7 +47,7 @@ namespace TickSystem.Core
 		public void CopyFrom(GroupParams other)
 		{
 			name = other.name;
-			tickRate = other.tickRate;
+			interval = other.interval;
 			active = other.active;
 			useRealTime = other.useRealTime;
 		}
@@ -59,10 +59,10 @@ namespace TickSystem.Core
 		/// <param name="tickRate">The new tick rate.</param>
 		/// <param name="active">The new active state.</param>
 		/// <param name="useRealTime">Whether to use real time.</param>
-		public GroupParams Set(string name, int tickRate, bool active, bool useRealTime)
+		public GroupParams Set(string name, float tickRate, bool active, bool useRealTime)
 		{
 			this.name = name;
-			this.tickRate = tickRate;
+			this.interval = tickRate;
 			this.active = active;
 			this.useRealTime = useRealTime;
 			return this;
@@ -72,21 +72,21 @@ namespace TickSystem.Core
 
 		public override string ToString()
 		{
-			return $"[{name}, {tickRate}, {active}, {useRealTime}]";
+			return $"[{name}, {interval}, {active}, {useRealTime}]";
 		}
 		
 		public override bool Equals(object obj)
 		{
 			if (obj is GroupParams other)
 			{
-				return name == other.name && tickRate == other.tickRate && active == other.active && useRealTime == other.useRealTime;
+				return name == other.name && Math.Abs(interval - other.interval) < 0.0001f && active == other.active && useRealTime == other.useRealTime;
 			}
 			return false;
 		}
 
 		public override int GetHashCode()
 		{
-			return HashCode.Combine(name, tickRate, active, useRealTime);
+			return HashCode.Combine(name, interval, active, useRealTime);
 		}
 
 		#endregion
@@ -98,7 +98,7 @@ namespace TickSystem.Core
 		/// <returns>True if equal, otherwise false.</returns>
 		public bool Equals(GroupParams other)
 		{
-			return name == other.name && tickRate == other.tickRate && active == other.active && useRealTime == other.useRealTime;
+			return name == other.name && Math.Abs(interval - other.interval) < 0.0001f && active == other.active && useRealTime == other.useRealTime;
 		}
 	}
 }

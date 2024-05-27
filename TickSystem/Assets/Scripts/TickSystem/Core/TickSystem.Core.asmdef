@@ -1,3 +1,14 @@
 {
-	"name": "TickSystem.Core"
+    "name": "TickSystem.Core",
+    "rootNamespace": "TickSystem",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
 }

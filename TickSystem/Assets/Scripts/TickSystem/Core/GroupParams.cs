@@ -2,6 +2,7 @@ using System;
 
 namespace TickSystem.Core
 {
+	[Serializable]
 	public struct GroupParams
 	{
 		public string name;

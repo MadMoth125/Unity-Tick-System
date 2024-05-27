@@ -5,8 +5,8 @@ namespace TickSystem.Core
 {
 	public struct MutableKeyValuePair<TKey, TValue>
 	{
-		public TKey Key { get; set; }
-		public TValue Value { get; set; }
+		public TKey Key { get; private set; }
+		public TValue Value { get; private set; }
 		
 		public MutableKeyValuePair(TKey key, TValue value)
 		{
@@ -31,7 +31,29 @@ namespace TickSystem.Core
 			Key = pair.Key;
 			Value = pair.Value;
 		}
+
+		public void Set(TKey key, TValue value)
+		{
+			Key = key;
+			Value = value;
+		}
+
+		public void SetKey(TKey key)
+		{
+			Key = key;
+		}
+
+		public void SetValue(TValue value)
+		{
+			Value = value;
+		}
 		
+		public void Deconstruct(out TKey key, out TValue value)
+		{
+			key = Key;
+			value = Value;
+		}
+
 		public KeyValuePair<TKey, TValue> AsKeyValuePair()
 		{
 			return new KeyValuePair<TKey, TValue>(Key, Value);

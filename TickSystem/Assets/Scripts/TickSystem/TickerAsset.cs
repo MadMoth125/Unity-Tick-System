@@ -10,6 +10,8 @@ namespace TickSystem
 	{
 		public IReadOnlyList<TickGroupAsset> TickGroupAssets => tickGroups;
 
+		private static List<TickerAsset> TickerAssets { get; } = new List<TickerAsset>();
+
 		[Tooltip("Whether the ticker is active.")]
 		[SerializeField]
 		public bool active = true;
@@ -20,6 +22,13 @@ namespace TickSystem
 
 		private Ticker _ticker;
 
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+		private static void InitializeSystem()
+		{
+			TickUpdater.InitializeInstance();
+			TickUpdater.Instance.SetTickerAsset(TickerAssets[0]);
+		}
+		
 		public void Add(TickGroupAsset tickGroup)
 		{
 			if (tickGroup == null) return;
@@ -60,9 +69,18 @@ namespace TickSystem
 			}
 		}
 
+		private void OnEnable()
+		{
+			if (TickerAssets.Contains(this)) return;
+			TickerAssets.Add(this);
+		}
+
 		private void OnDisable()
 		{
 			_ticker?.Clear();
+			
+			if (!TickerAssets.Contains(this)) return;
+			TickerAssets.Remove(this);
 		}
 
 		#endregion

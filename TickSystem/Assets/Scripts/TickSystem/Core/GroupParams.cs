@@ -11,7 +11,9 @@ namespace TickSystem.Core
 		public bool useRealTime;
 		
 		public static GroupParams Default => new GroupParams("TickGroup", 20, true, false);
-		
+
+		#region Constructors
+
 		public GroupParams(string name, int tickRate, bool active, bool useRealTime)
 		{
 			this.name = name;
@@ -35,7 +37,13 @@ namespace TickSystem.Core
 			this.active = true;
 			this.useRealTime = false;
 		}
+
+		#endregion
 		
+		/// <summary>
+		/// Copies values from another GroupParams instance.
+		/// </summary>
+		/// <param name="other">The GroupParams instance to copy values from.</param>
 		public void CopyFrom(GroupParams other)
 		{
 			name = other.name;
@@ -43,7 +51,9 @@ namespace TickSystem.Core
 			active = other.active;
 			useRealTime = other.useRealTime;
 		}
-		
+
+		#region Overrides
+
 		public override string ToString()
 		{
 			return $"[{name}, {tickRate}, {active}, {useRealTime}]";
@@ -58,14 +68,21 @@ namespace TickSystem.Core
 			return false;
 		}
 
-		public bool Equals(GroupParams other)
-		{
-			return name == other.name && tickRate == other.tickRate && active == other.active && useRealTime == other.useRealTime;
-		}
-
 		public override int GetHashCode()
 		{
 			return HashCode.Combine(name, tickRate, active, useRealTime);
+		}
+
+		#endregion
+
+		/// <summary>
+		/// Checks equality with another GroupParams instance.
+		/// </summary>
+		/// <param name="other">The GroupParams instance to compare with.</param>
+		/// <returns>True if equal, otherwise false.</returns>
+		public bool Equals(GroupParams other)
+		{
+			return name == other.name && tickRate == other.tickRate && active == other.active && useRealTime == other.useRealTime;
 		}
 	}
 }

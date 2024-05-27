@@ -4,8 +4,14 @@ namespace TickSystem.Core
 {
 	public class Ticker
 	{
+		/// <summary>
+		/// Whether the ticker is active.
+		/// </summary>
 		public bool active = true;
 
+		/// <summary>
+		/// The tick groups managed by this ticker.
+		/// </summary>
 		public IReadOnlyList<TickGroup> TickGroups => _groupsAndTimers.ConvertAll(pair => pair.Key);
 
 		private readonly List<MutableKeyValuePair<TickGroup, float>> _groupsAndTimers;
@@ -63,6 +69,10 @@ namespace TickSystem.Core
 
 		#endregion
 		
+		/// <summary>
+		/// Adds a tick group to the ticker.
+		/// </summary>
+		/// <param name="tickGroup">The tick group to add.</param>
 		public void Add(TickGroup tickGroup)
 		{
 			if (tickGroup == null) return;
@@ -70,6 +80,10 @@ namespace TickSystem.Core
 			_groupsAndTimers.Add(new MutableKeyValuePair<TickGroup, float>(tickGroup, 0f));
 		}
 		
+		/// <summary>
+		/// Removes a tick group from the ticker.
+		/// </summary>
+		/// <param name="tickGroup">The tick group to remove.</param>
 		public void Remove(TickGroup tickGroup)
 		{
 			if (tickGroup == null) return;
@@ -77,6 +91,9 @@ namespace TickSystem.Core
 			_groupsAndTimers.RemoveAll(pair => pair.Key == tickGroup);
 		}
 		
+		/// <summary>
+		/// Clears all tick groups from the ticker.
+		/// </summary>
 		public void Clear()
 		{
 			if (_groupsAndTimers.Count == 0) return;
@@ -88,6 +105,9 @@ namespace TickSystem.Core
 			_groupsAndTimers.Clear();
 		}
 		
+		/// <summary>
+		/// Resets the timers for all tick groups.
+		/// </summary>
 		public void ResetTimers()
 		{
 			if (_groupsAndTimers.Count == 0) return;
@@ -97,9 +117,11 @@ namespace TickSystem.Core
 			}
 		}
 		
-		// dt = Time.deltaTime, udt = Time.unscaledDeltaTime
-		// not using Time.deltaTime or Time.unscaledDeltaTime directly
-		// as to keep the class independent from any Unity APIs
+		/// <summary>
+		/// Updates the ticker and invokes callbacks based on delta time.
+		/// </summary>
+		/// <param name="dt">The delta time.</param>
+		/// <param name="udt">The unscaled delta time.</param>
 		public void Update(float dt, float udt)
 		{
 			// Skip if the ticker is inactive

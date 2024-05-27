@@ -6,13 +6,19 @@ namespace TickSystem.Core
 {
 	public class TickGroup
 	{
-		// The parameters for the group.
+		/// <summary>
+		/// The parameters for the group.
+		/// </summary>
 		public GroupParams Parameters { get; private set; }
 		
-		// The actions to be invoked when the group ticks.
+		/// <summary>
+		/// The actions to be invoked when the group ticks.
+		/// </summary>
 		public IReadOnlyList<Action> Callbacks => _callbacks;
 		
-		// The number of callbacks in the group.
+		/// <summary>
+		/// The number of callbacks in the group.
+		/// </summary>
 		public int CallbackCount => _callbacks.Count;
 		
 		private readonly List<Action> _callbacks;
@@ -45,6 +51,10 @@ namespace TickSystem.Core
 
 		#endregion
 		
+		/// <summary>
+		/// Adds a callback to the group.
+		/// </summary>
+		/// <param name="callback">The callback to add.</param>
 		public void Add(Action callback)
 		{
 			if (callback == null) return;
@@ -52,6 +62,10 @@ namespace TickSystem.Core
 			_callbacks.Add(callback);
 		}
 		
+		/// <summary>
+		/// Removes a callback from the group.
+		/// </summary>
+		/// <param name="callback">The callback to remove.</param>
 		public void Remove(Action callback)
 		{
 			if (callback == null) return;
@@ -59,12 +73,18 @@ namespace TickSystem.Core
 			_callbacks.Remove(callback);
 		}
 		
+		/// <summary>
+		/// Clears all callbacks from the group.
+		/// </summary>
 		public void Clear()
 		{
 			if (_callbacks.Count == 0) return;
 			_callbacks.Clear();
 		}
 
+		/// <summary>
+		/// Invokes all callbacks in the group.
+		/// </summary>
 		public void Invoke()
 		{
 			if (_callbacks.Count == 0) return;

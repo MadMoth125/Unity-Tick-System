@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TickSystem.Core
 {
@@ -18,10 +19,10 @@ namespace TickSystem.Core
 
 		#region Constructors
 
-		public TickGroup(GroupParams parameters, List<Action> callbacks)
+		public TickGroup(GroupParams parameters, IEnumerable<Action> callbacks)
 		{
 			Parameters = parameters;
-			_callbacks = callbacks;
+			_callbacks = callbacks.ToList();
 		}
 
 		public TickGroup(GroupParams parameters)
@@ -30,10 +31,10 @@ namespace TickSystem.Core
 			_callbacks = new List<Action>();
 		}
 
-		public TickGroup(List<Action> callbacks)
+		public TickGroup(IEnumerable<Action> callbacks)
 		{
 			Parameters = GroupParams.Default;
-			_callbacks = callbacks;
+			_callbacks = callbacks.ToList();
 		}
 
 		public TickGroup()

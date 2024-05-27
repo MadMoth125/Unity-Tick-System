@@ -8,6 +8,8 @@ namespace TickSystem.Core
 		public bool active;
 		public bool useRealTime;
 		
+		public static GroupParams Default => new GroupParams("TickGroup", 20, true, false);
+		
 		public GroupParams(string name, int tickRate, bool active, bool useRealTime)
 		{
 			this.name = name;

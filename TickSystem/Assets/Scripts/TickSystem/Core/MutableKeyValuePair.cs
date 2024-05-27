@@ -79,6 +79,8 @@ namespace TickSystem.Core
 			return $"[{Key}, {Value}]";
 		}
 
+		#region Operators
+
 		public static implicit operator MutableKeyValuePair<TKey, TValue>(KeyValuePair<TKey, TValue> pair)
 		{
 			return new MutableKeyValuePair<TKey, TValue>(pair);
@@ -88,5 +90,7 @@ namespace TickSystem.Core
 		{
 			return new KeyValuePair<TKey, TValue>(pair.Key, pair.Value);
 		}
+
+		#endregion
 	}
 }

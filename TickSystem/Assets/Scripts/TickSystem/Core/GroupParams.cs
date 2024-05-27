@@ -59,12 +59,13 @@ namespace TickSystem.Core
 		/// <param name="tickRate">The new tick rate.</param>
 		/// <param name="active">The new active state.</param>
 		/// <param name="useRealTime">Whether to use real time.</param>
-		public void Set(string name, int tickRate, bool active, bool useRealTime)
+		public GroupParams Set(string name, int tickRate, bool active, bool useRealTime)
 		{
 			this.name = name;
 			this.tickRate = tickRate;
 			this.active = active;
 			this.useRealTime = useRealTime;
+			return this;
 		}
 
 		#region Overrides

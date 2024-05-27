@@ -68,7 +68,7 @@ namespace TickSystem.Core
 		}
 
 		#endregion
-		
+
 		/// <summary>
 		/// Adds a tick group to the ticker.
 		/// </summary>
@@ -79,7 +79,7 @@ namespace TickSystem.Core
 			if (_groupsAndTimers.Exists(pair => pair.Key == tickGroup)) return;
 			_groupsAndTimers.Add(new MutableKeyValuePair<TickGroup, float>(tickGroup, 0f));
 		}
-		
+
 		/// <summary>
 		/// Removes a tick group from the ticker.
 		/// </summary>
@@ -90,7 +90,7 @@ namespace TickSystem.Core
 			if (!_groupsAndTimers.Exists(pair => pair.Key == tickGroup)) return;
 			_groupsAndTimers.RemoveAll(pair => pair.Key == tickGroup);
 		}
-		
+
 		/// <summary>
 		/// Clears all tick groups from the ticker.
 		/// </summary>
@@ -104,7 +104,16 @@ namespace TickSystem.Core
 			}
 			_groupsAndTimers.Clear();
 		}
-		
+
+		public void SetTickGroups(IEnumerable<TickGroup> tickGroups)
+		{
+			Clear();
+			foreach (var tickGroup in tickGroups)
+			{
+				_groupsAndTimers.Add(new MutableKeyValuePair<TickGroup, float>(tickGroup, 0f));
+			}
+		}
+
 		/// <summary>
 		/// Resets the timers for all tick groups.
 		/// </summary>

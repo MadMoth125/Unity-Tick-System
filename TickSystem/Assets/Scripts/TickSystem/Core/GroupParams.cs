@@ -52,6 +52,21 @@ namespace TickSystem.Core
 			useRealTime = other.useRealTime;
 		}
 
+		/// <summary>
+		/// Sets the parameters of the group.
+		/// </summary>
+		/// <param name="name">The new name.</param>
+		/// <param name="tickRate">The new tick rate.</param>
+		/// <param name="active">The new active state.</param>
+		/// <param name="useRealTime">Whether to use real time.</param>
+		public void Set(string name, int tickRate, bool active, bool useRealTime)
+		{
+			this.name = name;
+			this.tickRate = tickRate;
+			this.active = active;
+			this.useRealTime = useRealTime;
+		}
+
 		#region Overrides
 
 		public override string ToString()

@@ -138,6 +138,9 @@ namespace TickSystem.Core
 			
 			for (int i = 0; i < _groupsAndTimers.Count; i++)
 			{
+				// Skip null tick groups
+				if (_groupsAndTimers[i] == null) continue;
+				
 				// Skip inactive tick groups
 				if (!_groupsAndTimers[i].Key.parameters.active) continue;
 				

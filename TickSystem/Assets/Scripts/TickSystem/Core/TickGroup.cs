@@ -7,45 +7,45 @@ namespace TickSystem.Core
 	public class TickGroup
 	{
 		/// <summary>
-		/// The parameters for the group.
-		/// </summary>
-		public GroupParams Parameters { get; private set; }
-		
-		/// <summary>
 		/// The actions to be invoked when the group ticks.
 		/// </summary>
 		public IReadOnlyList<Action> Callbacks => _callbacks;
-		
+
 		/// <summary>
 		/// The number of callbacks in the group.
 		/// </summary>
 		public int CallbackCount => _callbacks.Count;
-		
+
+		/// <summary>
+		/// The parameters for the group.
+		/// </summary>
+		public GroupParams parameters;
+
 		private readonly List<Action> _callbacks;
 
 		#region Constructors
 
 		public TickGroup(GroupParams parameters, IEnumerable<Action> callbacks)
 		{
-			Parameters = parameters;
+			this.parameters = parameters;
 			_callbacks = callbacks.ToList();
 		}
 
 		public TickGroup(GroupParams parameters)
 		{
-			Parameters = parameters;
+			this.parameters = parameters;
 			_callbacks = new List<Action>();
 		}
 
 		public TickGroup(IEnumerable<Action> callbacks)
 		{
-			Parameters = GroupParams.Default;
+			parameters = GroupParams.Default;
 			_callbacks = callbacks.ToList();
 		}
 
 		public TickGroup()
 		{
-			Parameters = GroupParams.Default;
+			parameters = GroupParams.Default;
 			_callbacks = new List<Action>();
 		}
 

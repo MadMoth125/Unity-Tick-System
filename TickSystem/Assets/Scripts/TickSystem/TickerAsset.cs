@@ -8,13 +8,24 @@ namespace TickSystem
 	[CreateAssetMenu(fileName = "NewTicker", menuName = "Tick System/Ticker")]
 	public class TickerAsset : ScriptableObject
 	{
+		public bool Active
+		{
+			get => active;
+			set
+			{
+				if (active == value) return;
+				active = value;
+				UpdateParameters();
+			}
+		}
+		
 		public IReadOnlyList<TickGroupAsset> TickGroupAssets => tickGroups;
 
 		private static List<TickerAsset> TickerAssets { get; } = new List<TickerAsset>();
 
 		[Tooltip("Whether the ticker is active.")]
 		[SerializeField]
-		public bool active = true;
+		private bool active = true;
 
 		[Tooltip("The tick groups managed by this ticker.")]
 		[SerializeField]
@@ -57,10 +68,19 @@ namespace TickSystem
 			return _ticker;
 		}
 
+		private void UpdateParameters()
+		{
+			if (!Application.isPlaying) return;
+			if (_ticker == null) return;
+			_ticker.active = active;
+		}
+		
 		#region Unity Methods
 
 		private void OnValidate()
 		{
+			UpdateParameters();
+			
 			for (int i = 0; i < tickGroups.Count; i++)
 			{
 				if (tickGroups[i] != null) continue;

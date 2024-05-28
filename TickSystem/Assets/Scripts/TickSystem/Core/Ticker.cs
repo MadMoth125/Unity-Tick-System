@@ -105,6 +105,10 @@ namespace TickSystem.Core
 			_groupsAndTimers.Clear();
 		}
 
+		/// <summary>
+		/// Sets the tick groups for the ticker.
+		/// </summary>
+		/// <param name="tickGroups">The tick groups to set.</param>
 		public void SetTickGroups(IEnumerable<TickGroup> tickGroups)
 		{
 			Clear();

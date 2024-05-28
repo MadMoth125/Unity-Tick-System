@@ -91,6 +91,9 @@ namespace TickSystem
 			return _groupParams.Set(name, 1f / tickRate, active, useRealTime);
 		}
 		
+		/// <summary>
+		/// Returns the tick group associated with this asset.
+		/// </summary>
 		public TickGroup GetTickGroup()
 		{
 			if (_tickGroup == null)
@@ -103,6 +106,9 @@ namespace TickSystem
 			return _tickGroup;
 		}
 
+		/// <summary>
+		/// Updates the parameters of the tick group with the most recent values.
+		/// </summary>
 		private void UpdateParameters()
 		{
 			if (Application.isPlaying && _tickGroup != null)

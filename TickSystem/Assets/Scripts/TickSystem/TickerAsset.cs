@@ -22,8 +22,14 @@ namespace TickSystem
 			}
 		}
 		
+		/// <summary>
+		/// The tick group assets managed by this ticker asset.
+		/// </summary>
 		public IReadOnlyList<TickGroupAsset> TickGroupAssets => tickGroups;
 
+		/// <summary>
+		/// The instances of any ticker assets.
+		/// </summary>
 		private static List<TickerAsset> TickerAssets { get; } = new List<TickerAsset>();
 
 		[Tooltip("Whether the ticker is active.")]
@@ -36,6 +42,7 @@ namespace TickSystem
 
 		private Ticker _ticker;
 
+		// Initialize the tick updater before any scenes load.
 		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
 		private static void InitializeSystem()
 		{
@@ -43,6 +50,10 @@ namespace TickSystem
 			TickUpdater.Instance.SetTickerAsset(TickerAssets[0]);
 		}
 		
+		/// <summary>
+		/// Adds a tick group asset to the ticker.
+		/// </summary>
+		/// <param name="tickGroup">The tick group asset to add.</param>
 		public void Add(TickGroupAsset tickGroup)
 		{
 			if (tickGroup == null) return;
@@ -51,6 +62,10 @@ namespace TickSystem
 			GetTicker().Add(tickGroups[^1].GetTickGroup());
 		}
 
+		/// <summary>
+		/// Removes a tick group asset from the ticker.
+		/// </summary>
+		/// <param name="tickGroup">The tick group asset to remove.</param>
 		public void Remove(TickGroupAsset tickGroup)
 		{
 			if (tickGroup == null) return;
@@ -59,11 +74,18 @@ namespace TickSystem
 			GetTicker().Remove(tickGroup.GetTickGroup());
 		}
 
+		/// <summary>
+		/// Reloads the tick groups for the ticker.
+		/// </summary>
 		public void ReloadTickGroups()
 		{
 			GetTicker().SetTickGroups(tickGroups.ConvertAll(tickGroup => tickGroup.GetTickGroup()));
 		}
 
+		/// <summary>
+		/// Gets the ticker instance.
+		/// </summary>
+		/// <returns>The ticker instance.</returns>
 		public Ticker GetTicker()
 		{
 			if (_ticker != null) return _ticker;
@@ -71,6 +93,9 @@ namespace TickSystem
 			return _ticker;
 		}
 
+		/// <summary>
+		/// Updates the parameters of the ticker with the most recent values.
+		/// </summary>
 		private void UpdateParameters()
 		{
 			if (Application.isPlaying && _ticker != null)

@@ -2,6 +2,7 @@ using UnityEngine;
 
 namespace TickSystem
 {
+	[DisallowMultipleComponent]
 	public class TickUpdater : MonoBehaviour
 	{
 		/// <summary>

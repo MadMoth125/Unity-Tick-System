@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c08e34e21d72c6b4cac552ab4d5712d9, type: 3}
-  m_Name: NewTickGroup
+  m_Name: TickGroupB_RT
   m_EditorClassIdentifier: 
   active: 1
-  useRealTime: 0
+  useRealTime: 1
   tickRate: 20

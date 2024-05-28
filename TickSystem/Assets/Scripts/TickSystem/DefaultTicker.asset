@@ -10,7 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fa99db6727f524042811e9bc270973a8, type: 3}
-  m_Name: NewTicker
+  m_Name: DefaultTicker
   m_EditorClassIdentifier: 
   active: 1
-  tickGroups: []
+  tickGroups:
+  - {fileID: 11400000, guid: 8557bff4e957d0a48add4a69550e32bf, type: 2}

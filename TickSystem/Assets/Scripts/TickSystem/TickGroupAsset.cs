@@ -7,6 +7,11 @@ namespace TickSystem
 	[CreateAssetMenu(fileName = "NewTickGroup", menuName = "Tick System/Tick Group")]
 	public class TickGroupAsset : ScriptableObject
 	{
+		#region Properties
+
+		/// <summary>
+		/// Whether the tick group is active.
+		/// </summary>
 		public bool Active
 		{
 			get => active;
@@ -18,6 +23,10 @@ namespace TickSystem
 			}
 		}
 		
+		/// <summary>
+		/// Whether the tick group uses real time.
+		/// If false, it uses game time.
+		/// </summary>
 		public bool UseRealTime
 		{
 			get => useRealTime;
@@ -29,6 +38,9 @@ namespace TickSystem
 			}
 		}
 		
+		/// <summary>
+		/// The number of ticks per second.
+		/// </summary>
 		public int TickRate
 		{
 			get => tickRate;
@@ -39,6 +51,8 @@ namespace TickSystem
 				UpdateParameters();
 			}
 		}
+
+		#endregion
 
 		[Tooltip("Whether the tick group is active.")]
 		[SerializeField]
@@ -57,10 +71,21 @@ namespace TickSystem
 		private GroupParams _groupParams;
 		private TickGroup _tickGroup;
 		
+		/// <summary>
+		/// Adds a callback to the group.
+		/// </summary>
+		/// <param name="callback">The callback to add.</param>
 		public void Add(Action callback) => GetTickGroup().Add(callback);
 
+		/// <summary>
+		/// Removes a callback from the group.
+		/// </summary>
+		/// <param name="callback">The callback to remove.</param>
 		public void Remove(Action callback) => GetTickGroup().Remove(callback);
 		
+		/// <summary>
+		/// Returns the parameters for the group asset.
+		/// </summary>
 		public GroupParams GetGroupParams()
 		{
 			return _groupParams.Set(name, 1f / tickRate, active, useRealTime);
@@ -74,15 +99,16 @@ namespace TickSystem
 				return _tickGroup;
 			}
 			
-			_tickGroup.parameters = GetGroupParams();
+			_tickGroup.parameters.CopyFrom(GetGroupParams());
 			return _tickGroup;
 		}
 
 		private void UpdateParameters()
 		{
-			if (!Application.isPlaying) return;
-			if (_tickGroup == null) return;
-			_tickGroup.parameters = GetGroupParams();
+			if (Application.isPlaying && _tickGroup != null)
+			{
+				_tickGroup.parameters.CopyFrom(GetGroupParams());
+			}
 		}
 
 		#region Unity Methods

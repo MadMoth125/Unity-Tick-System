@@ -8,6 +8,9 @@ namespace TickSystem
 	[CreateAssetMenu(fileName = "NewTicker", menuName = "Tick System/Ticker")]
 	public class TickerAsset : ScriptableObject
 	{
+		/// <summary>
+		/// Whether the ticker is active.
+		/// </summary>
 		public bool Active
 		{
 			get => active;
@@ -70,15 +73,18 @@ namespace TickSystem
 
 		private void UpdateParameters()
 		{
-			if (!Application.isPlaying) return;
-			if (_ticker == null) return;
-			_ticker.active = active;
+			if (Application.isPlaying && _ticker != null)
+			{
+				_ticker.active = active;
+			}
 		}
 		
 		#region Unity Methods
 
 		private void OnValidate()
 		{
+			#if UNITY_EDITOR
+			
 			UpdateParameters();
 			
 			for (int i = 0; i < tickGroups.Count; i++)
@@ -87,6 +93,8 @@ namespace TickSystem
 				tickGroups.RemoveAt(i);
 				i--;
 			}
+			
+			#endif
 		}
 
 		private void OnEnable()

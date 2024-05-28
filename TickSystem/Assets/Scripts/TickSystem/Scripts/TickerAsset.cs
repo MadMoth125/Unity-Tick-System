@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TickSystem.Core;
+using UnityEditor;
 using UnityEngine;
 
 namespace TickSystem
@@ -137,5 +138,32 @@ namespace TickSystem
 		}
 
 		#endregion
+
+		#if UNITY_EDITOR
+		
+		[ContextMenu("Load all " + nameof(TickGroupAsset) + " instances.")]
+		private void FindAllTickGroupAssets()
+		{
+			if (Application.isPlaying)
+			{
+				Debug.LogWarning("Cannot load TickGroupAssets during play mode.");
+				return;
+			}
+			
+			string[] guids = AssetDatabase.FindAssets($"t:{nameof(TickGroupAsset)}", null);
+			if (guids.Length == 0)
+			{
+				Debug.Log($"No {nameof(TickGroupAsset)} assets found in project.");
+				return;
+			}
+
+			foreach (string guid in guids)
+			{
+				Add(AssetDatabase.LoadAssetAtPath<TickGroupAsset>(AssetDatabase.GUIDToAssetPath(guid)));
+			}
+			
+		}
+		
+		#endif
 	}
 }

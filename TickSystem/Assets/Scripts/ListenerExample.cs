@@ -12,13 +12,13 @@ public class ListenerExample : MonoBehaviour
 	private void OnEnable()
 	{
 		if (tickGroup == null) return;
-		tickGroup.GetTickGroup().Add(TestMethod);
+		tickGroup.Add(TestMethod);
 	}
 
 	private void OnDisable()
 	{
 		if (tickGroup == null) return;
-		tickGroup.GetTickGroup().Remove(TestMethod);
+		tickGroup.Remove(TestMethod);
 	}
 
 	#endregion

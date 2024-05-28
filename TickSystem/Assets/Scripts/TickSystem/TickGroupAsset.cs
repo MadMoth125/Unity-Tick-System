@@ -57,6 +57,10 @@ namespace TickSystem
 		private GroupParams _groupParams;
 		private TickGroup _tickGroup;
 		
+		public void Add(Action callback) => GetTickGroup().Add(callback);
+
+		public void Remove(Action callback) => GetTickGroup().Remove(callback);
+		
 		public GroupParams GetGroupParams()
 		{
 			return _groupParams.Set(name, 1f / tickRate, active, useRealTime);

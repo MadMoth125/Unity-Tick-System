@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,13 +9,6 @@ using UnityEngine.TestTools;
 
 internal class TickSystemTests
 {
-	/*
-	 * A test that checks if a TickGroup is properly added to TickManager.TickGroupInstances when instantiated.
-	 *
-	 * If this is failing, ensure that:
-	 * - TickGroup is being registered with TickManager.RegisterTickGroup in its constructor.
-	 * - TickManager is adding the TickGroup to its list of registered instances.
-	 */
 	[Test]
 	public void TickGroup_Instantiated_AddedToManager()
 	{
@@ -27,13 +21,6 @@ internal class TickSystemTests
 		Assert.IsTrue(registered, "TickGroup couldn't be found in the TickManager's registered instances.");
 	}
 
-	/*
-	 * A test that checks if a TickGroup is properly removed from TickManager.TickGroupInstances when disposed.
-	 *
-	 * If this is failing, ensure that:
-	 * - TickGroup is being unregistered with TickManager.UnregisterTickGroup in its Dispose method.
-	 * - TickManager is removing the TickGroup from its list of registered instances.
-	 */
 	[Test]
 	public void TickGroup_Disposed_RemovedFromManager()
 	{
@@ -46,14 +33,6 @@ internal class TickSystemTests
 		Assert.IsFalse(registered, "TickGroup was found in the TickManager's registered instances after being disposed.");
 	}
 
-	/*
-	 * A test that checks if a TickGroup is properly initialized with the provided parameters.
-	 *
-	 * If this is failing, ensure that:
-	 * - GroupParams is being initialized with the provided parameters in its constructor.
-	 * - TickGroup is being initialized with the provided parameters in its constructor.
-	 * - The GroupParams equality operator is properly implemented.
-	 */
 	[Test]
 	public void TickGroup_InitializedWithParams_HasSameParams()
 	{
@@ -71,13 +50,6 @@ internal class TickSystemTests
 		                         DisplayGroupParamStrings(paramsA, paramsB));
 	}
 
-	/*
-	 * A test that checks if a TickGroup is properly initialized with the default parameters.
-	 *
-	 * If this is failing, ensure that:
-	 * - TickGroup is being initialized with the default parameters in its parameterless constructor.
-	 * - The GroupParams equality operator is properly implemented.
-	 */
 	[Test]
 	public void TickGroup_InitializedWithNoParams_HasDefaultParams()
 	{
@@ -95,9 +67,42 @@ internal class TickSystemTests
 		                         DisplayGroupParamStrings(paramsA, paramsB));
 	}
 
-	// A Test behaves as an ordinary method
 	[UnityTest]
-	public IEnumerator TickGroup_ManagerDisabled_PreventTick()
+	public IEnumerator TickGroup_AddListenerMethod_CallsMethod()
+	{
+		// save the previous state of the TickManager
+		bool prevManagerState = TickManager.Active;
+
+		// declare a variable to count the number of times the listener method is called
+		int tickCount = 0; // should be 1
+
+		// enable the TickManager
+		TickManager.Active = true;
+
+		// create a new TickGroup
+		var group = new TickGroup(GroupParams.Default);
+
+		// add a listener method to the group
+		group.Add(TestListenerMethod);
+
+		// wait for a short time (enough time for the group to tick)
+		yield return new WaitForSeconds(GetForgivingInterval(group.parameters));
+
+		// dispose of the group
+		group.Dispose();
+		TickManager.Active = prevManagerState;
+
+		// check if the listener method has been called
+		Assert.IsTrue(tickCount > 0, "TickGroup did not call the listener method.");
+		Assert.IsFalse(tickCount > 1, "TickGroup called the listener method more than once.");
+
+		yield break;
+
+		void TestListenerMethod() => tickCount++;
+	}
+
+	[UnityTest]
+	public IEnumerator TickManager_Disabled_PreventTick()
 	{
 		// save the previous state of the TickManager
 		bool prevManagerState = TickManager.Active;
@@ -114,7 +119,7 @@ internal class TickSystemTests
 		group.Add(TestListenerMethod);
 
 		// wait for a short time (enough time for the group to tick)
-		yield return new WaitForSeconds(group.parameters.interval);
+		yield return new WaitForSeconds(GetForgivingInterval(group.parameters));
 
 		// dispose of the group
 		group.Dispose();
@@ -123,11 +128,26 @@ internal class TickSystemTests
 		TickManager.Active = prevManagerState;
 
 		// check if the listener method has been called
-		Assert.IsTrue(tickCount == 0, "TickManager.Active = false did not prevent TickGroup from ticking.");
+		Assert.IsTrue(tickCount < 1, "TickManager.Active = false did not prevent TickGroup from ticking.");
 
 		yield break;
 
 		void TestListenerMethod() => tickCount++;
+	}
+
+	[Test]
+	public void TickManager_FindTickGroup_ReturnsTickGroup()
+	{
+		GroupParams groupParams = new GroupParams("TestGroup", 0.1f, true, true);
+
+		var tickGroup = new TickGroup(groupParams);
+
+		var foundGroup = TickManager.FindTickGroup("TestGroup");
+
+		Assert.AreEqual(tickGroup, foundGroup, "TickManager did not return the correct TickGroup.");
+
+		tickGroup.Dispose();
+		foundGroup.Dispose();
 	}
 
 	/// <summary>
@@ -143,5 +163,16 @@ internal class TickSystemTests
 		       $"B.active - {b.active}\n" +
 		       $"A.useRealTime - {a.useRealTime}\n" +
 		       $"B.useRealTime - {b.useRealTime}";
+	}
+
+	/// <summary>
+	/// Returns a tick interval that has a small buffer,
+	/// allowing yields to give enough time for systems to initialize and ticks to occur.
+	/// </summary>
+	private static float GetForgivingInterval(GroupParams groupParams)
+	{
+		// return the interval plus a small buffer
+		// (has minimum delay of 0.01f to prevent useless delay values)
+		return groupParams.interval + Math.Max(groupParams.interval * 0.1f, 0.01f);
 	}
 }

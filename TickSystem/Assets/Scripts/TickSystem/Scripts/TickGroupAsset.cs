@@ -19,10 +19,10 @@ namespace TickSystem
 			{
 				if (active == value) return;
 				active = value;
-				UpdateParameters();
+				GetTickGroup().Active(value);
 			}
 		}
-		
+
 		/// <summary>
 		/// Whether the tick group uses real time.
 		/// If false, it uses game time.
@@ -34,10 +34,10 @@ namespace TickSystem
 			{
 				if (useRealTime == value) return;
 				useRealTime = value;
-				UpdateParameters();
+				GetTickGroup().UseRealTime(value);
 			}
 		}
-		
+
 		/// <summary>
 		/// The number of ticks per second.
 		/// </summary>
@@ -48,9 +48,14 @@ namespace TickSystem
 			{
 				if (tickRate == value) return;
 				tickRate = value;
-				UpdateParameters();
+				GetTickGroup().Interval(1f / value);
 			}
 		}
+
+		/// <summary>
+		/// The interval between ticks. (read-only)
+		/// </summary>
+		public float Interval => 1f / tickRate;
 
 		#endregion
 
@@ -67,10 +72,9 @@ namespace TickSystem
 		[Range(1, 60)]
 		[SerializeField]
 		private int tickRate = 20;
-		
-		private GroupParams _groupParams;
+
 		private TickGroup _tickGroup;
-		
+
 		/// <summary>
 		/// Adds a callback to the group.
 		/// </summary>
@@ -82,52 +86,30 @@ namespace TickSystem
 		/// </summary>
 		/// <param name="callback">The callback to remove.</param>
 		public void Remove(Action callback) => GetTickGroup().Remove(callback);
-		
+
 		/// <summary>
 		/// Returns the parameters for the group asset.
 		/// </summary>
-		public GroupParams GetGroupParams()
-		{
-			return _groupParams.Set(name, 1f / tickRate, active, useRealTime);
-		}
-		
+		public GroupParams GetGroupParams() => new(name, 1f / tickRate, active, useRealTime);
+
 		/// <summary>
 		/// Returns the tick group associated with this asset.
 		/// </summary>
-		public TickGroup GetTickGroup()
-		{
-			if (_tickGroup == null)
-			{
-				_tickGroup = new TickGroup(GetGroupParams());
-				return _tickGroup;
-			}
-			
-			_tickGroup.parameters.CopyFrom(GetGroupParams());
-			return _tickGroup;
-		}
-
-		/// <summary>
-		/// Updates the parameters of the tick group with the most recent values.
-		/// </summary>
-		private void UpdateParameters()
-		{
-			if (Application.isPlaying && _tickGroup != null)
-			{
-				_tickGroup.parameters.CopyFrom(GetGroupParams());
-			}
-		}
+		public TickGroup GetTickGroup() => _tickGroup ??= new TickGroup(GetGroupParams());
 
 		#region Unity Methods
 
+		#if UNITY_EDITOR
 		private void OnValidate()
 		{
-			UpdateParameters();
+			if (!Application.isPlaying || _tickGroup == null) return;
+			GetTickGroup().SetParameters(GetGroupParams());
 		}
+		#endif
 
-		private void OnDisable()
-		{
-			_tickGroup?.Clear();
-		}
+		private void OnEnable() => _tickGroup = new TickGroup(GetGroupParams());
+
+		private void OnDisable() => _tickGroup?.Dispose();
 
 		#endregion
 	}

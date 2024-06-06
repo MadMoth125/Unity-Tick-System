@@ -1,0 +1,19 @@
+{
+    "name": "TickSystem.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:66f3c6ccc5655c44a9ef8370343970af",
+        "GUID:a1aa548cb3719294ebfe48d0f5d45ee1"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

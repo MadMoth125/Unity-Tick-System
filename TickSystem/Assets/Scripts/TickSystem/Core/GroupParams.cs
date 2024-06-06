@@ -9,7 +9,11 @@ namespace TickSystem.Core
 		public float interval;
 		public bool active;
 		public bool useRealTime;
-		
+
+		/// <summary>
+		/// Default parameters for a tick group.
+		/// Values: name = "TickGroup", interval = 0.05f, active = true, useRealTime = false.
+		/// </summary>
 		public static GroupParams Default => new GroupParams("TickGroup", 0.05f, true, false);
 
 		#region Constructors
@@ -21,7 +25,7 @@ namespace TickSystem.Core
 			this.active = active;
 			this.useRealTime = useRealTime;
 		}
-		
+
 		public GroupParams(string name, float interval, bool active)
 		{
 			this.name = name;
@@ -29,7 +33,7 @@ namespace TickSystem.Core
 			this.active = active;
 			this.useRealTime = false;
 		}
-		
+
 		public GroupParams(string name, float interval)
 		{
 			this.name = name;
@@ -39,66 +43,56 @@ namespace TickSystem.Core
 		}
 
 		#endregion
-		
+
 		/// <summary>
-		/// Copies values from another GroupParams instance.
+		/// Sets the parameters of the group.
 		/// </summary>
-		/// <param name="other">The GroupParams instance to copy values from.</param>
-		public void CopyFrom(GroupParams other)
+		/// <param name="other">The GroupParams to copy values from.</param>
+		public void Set(GroupParams other)
 		{
-			name = other.name;
-			interval = other.interval;
-			active = other.active;
-			useRealTime = other.useRealTime;
+			this.name = other.name;
+			this.interval = other.interval;
+			this.active = other.active;
+			this.useRealTime = other.useRealTime;
 		}
 
 		/// <summary>
 		/// Sets the parameters of the group.
 		/// </summary>
 		/// <param name="name">The new name.</param>
-		/// <param name="tickRate">The new tick rate.</param>
+		/// <param name="interval">The new interval.</param>
 		/// <param name="active">The new active state.</param>
 		/// <param name="useRealTime">Whether to use real time.</param>
-		public GroupParams Set(string name, float tickRate, bool active, bool useRealTime)
+		public void Set(string name = "", float? interval = null, bool? active = null, bool? useRealTime = null)
 		{
-			this.name = name;
-			this.interval = tickRate;
-			this.active = active;
-			this.useRealTime = useRealTime;
-			return this;
+			if (name != "") this.name = name;
+			if (interval != null) this.interval = interval.Value;
+			if (active != null) this.active = active.Value;
+			if (useRealTime != null) this.useRealTime = useRealTime.Value;
 		}
 
 		#region Overrides
 
-		public override string ToString()
-		{
-			return $"[{name}, {interval}, {active}, {useRealTime}]";
-		}
-		
+		public override string ToString() => $"[n: {name}, i: {interval}, a: {active}, rt: {useRealTime}]";
+
 		public override bool Equals(object obj)
 		{
 			if (obj is GroupParams other)
 			{
-				return name == other.name && Math.Abs(interval - other.interval) < 0.0001f && active == other.active && useRealTime == other.useRealTime;
+				return this.name == other.name &&
+				       Math.Abs(this.interval - other.interval) < 0.0001f &&
+				       this.active == other.active &&
+				       this.useRealTime == other.useRealTime;
 			}
 			return false;
 		}
 
-		public override int GetHashCode()
-		{
-			return HashCode.Combine(name, interval, active, useRealTime);
-		}
+		public override int GetHashCode() => HashCode.Combine(name, interval, active, useRealTime);
+
+		public static bool operator ==(GroupParams a, GroupParams b) => a.Equals(b);
+
+		public static bool operator !=(GroupParams a, GroupParams b) => !(a == b);
 
 		#endregion
-
-		/// <summary>
-		/// Checks equality with another GroupParams instance.
-		/// </summary>
-		/// <param name="other">The GroupParams instance to compare with.</param>
-		/// <returns>True if equal, otherwise false.</returns>
-		public bool Equals(GroupParams other)
-		{
-			return name == other.name && Math.Abs(interval - other.interval) < 0.0001f && active == other.active && useRealTime == other.useRealTime;
-		}
 	}
 }

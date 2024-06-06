@@ -155,6 +155,7 @@ MonoBehaviour:
   slowDownKey: 276
   speedUpKey: 275
   pauseKey: 32
+  logTimeScale: 1
 --- !u!4 &376345365
 Transform:
   m_ObjectHideFlags: 0
@@ -274,7 +275,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tickGroup: {fileID: 11400000, guid: 20b83e7be52122e4e91098833d177464, type: 2}
-  rotationIncrement: {x: 0, y: 1, z: 0}
+  rotationIncrement: {x: 0, y: 10, z: 0}
 --- !u!4 &704783949
 Transform:
   m_ObjectHideFlags: 0
@@ -580,7 +581,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tickGroup: {fileID: 11400000, guid: f2b91277fa1abc24a83e60172044e97c, type: 2}
-  rotationIncrement: {x: 0, y: 1, z: 0}
+  rotationIncrement: {x: 0, y: 10, z: 0}
 --- !u!4 &2023772178
 Transform:
   m_ObjectHideFlags: 0

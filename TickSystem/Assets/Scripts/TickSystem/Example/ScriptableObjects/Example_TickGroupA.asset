@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa99db6727f524042811e9bc270973a8, type: 3}
-  m_Name: DefaultTicker
+  m_Script: {fileID: 11500000, guid: c08e34e21d72c6b4cac552ab4d5712d9, type: 3}
+  m_Name: Example_TickGroupA
   m_EditorClassIdentifier: 
   active: 1
-  tickGroups:
-  - {fileID: 11400000, guid: 8557bff4e957d0a48add4a69550e32bf, type: 2}
+  useRealTime: 0
+  tickRate: 5

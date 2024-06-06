@@ -39,6 +39,13 @@ namespace TickSystem.Core
 			TickManager.RegisterTickGroup(this);
 		}
 
+		public TickGroup(GroupParams parameters, params Action[] callbacks)
+		{
+			this.parameters = parameters;
+			_callbacks = callbacks.ToList();
+			TickManager.RegisterTickGroup(this);
+		}
+
 		public TickGroup(GroupParams parameters)
 		{
 			this.parameters = parameters;
@@ -47,6 +54,13 @@ namespace TickSystem.Core
 		}
 
 		public TickGroup(IEnumerable<Action> callbacks)
+		{
+			parameters = GroupParams.Default;
+			_callbacks = callbacks.ToList();
+			TickManager.RegisterTickGroup(this);
+		}
+
+		public TickGroup(params Action[] callbacks)
 		{
 			parameters = GroupParams.Default;
 			_callbacks = callbacks.ToList();

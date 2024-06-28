@@ -3,10 +3,13 @@ using System.Collections.Generic;
 
 namespace TickSystem.Core
 {
+	/// <summary>
+	/// Serves as a centralized system to manage and reference any existing TickGroups.
+	/// </summary>
 	public static class TickManager
 	{
-		public static event Action<TickGroup> OnTickGroupRegistered = delegate {  };
-		public static event Action<TickGroup> OnTickGroupUnregistered = delegate {  };
+		public static event Action<TickGroup> OnTickGroupAdded = delegate {  };
+		public static event Action<TickGroup> OnTickGroupRemoved = delegate {  };
 		public static event Action<bool> OnActiveStateChanged = delegate {  };
 
 		/// <summary>
@@ -33,36 +36,41 @@ namespace TickSystem.Core
 		private static readonly List<TickGroup> tickGroups = new();
 
 		/// <summary>
-		/// Registers a new tick group to the manager.
+		/// Adds a TickGroup to the manager.
 		/// </summary>
-		/// <param name="tickGroup">The tick group to register.</param>
-		public static void RegisterTickGroup(TickGroup tickGroup)
+		/// <param name="tickGroup"></param>
+		public static void Add(TickGroup tickGroup)
 		{
 			if (tickGroup == null || tickGroups.Contains(tickGroup)) return;
 			tickGroups.Add(tickGroup);
-			OnTickGroupRegistered.Invoke(tickGroup);
+			OnTickGroupAdded.Invoke(tickGroup);
 		}
 
 		/// <summary>
-		/// Unregisters an existing tick group from the manager.
+		/// Removes a TickGroup from the manager.
 		/// </summary>
-		/// <param name="tickGroup">The tick group to unregister.</param>
-		public static void UnregisterTickGroup(TickGroup tickGroup)
+		/// <param name="tickGroup"></param>
+		public static void Remove(TickGroup tickGroup)
 		{
 			if (tickGroup == null || !tickGroups.Contains(tickGroup)) return;
-			OnTickGroupUnregistered.Invoke(tickGroup);
+			OnTickGroupRemoved.Invoke(tickGroup);
 			tickGroups.Remove(tickGroup);
 		}
 
-		public static TickGroup FindTickGroup(string name)
+		public static TickGroup Find(string name)
 		{
 			return tickGroups.Find(tg => TickGroup.CompareName(tg, name));
 		}
 
-		public static bool FindTickGroup(string name, out TickGroup tickGroup)
+		public static bool Find(string name, out TickGroup tickGroup)
 		{
 			tickGroup = tickGroups.Find(tg => TickGroup.CompareName(tg, name));
 			return tickGroup != null;
+		}
+
+		public static bool Contains(string name)
+		{
+			return tickGroups.Find(tg => TickGroup.CompareName(tg, name)) != null;
 		}
 	}
 }

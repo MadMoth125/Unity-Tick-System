@@ -4,13 +4,10 @@ using System.Linq;
 
 namespace TickSystem.Core
 {
-	/* Representation of a group of callbacks that are invoked at a fixed interval.
-	 * Provides methods to add, remove, and invoke callbacks.
-	 * Includes parameters for the group such as name, interval, and active state.
-	 *
-	 * Each TickGroup instance is registered with the TickManager upon creation and unregisters when disposed is called,
-	 * this allows the TickManager to track all active groups and allows TickUpdater to access & update each group.
-	 */
+	/// <summary>
+	/// Encapsulates a collection of callbacks (actions) that should be
+	/// invoked at specified intervals, defined by a set of parameters.
+	/// </summary>
 	public class TickGroup : IDisposable
 	{
 		/// <summary>
@@ -36,42 +33,42 @@ namespace TickSystem.Core
 		{
 			this.parameters = parameters;
 			_callbacks = callbacks.ToList();
-			TickManager.RegisterTickGroup(this);
+			TickManager.Add(this);
 		}
 
 		public TickGroup(GroupParams parameters, params Action[] callbacks)
 		{
 			this.parameters = parameters;
 			_callbacks = callbacks.ToList();
-			TickManager.RegisterTickGroup(this);
+			TickManager.Add(this);
 		}
 
 		public TickGroup(GroupParams parameters)
 		{
 			this.parameters = parameters;
 			_callbacks = new List<Action>();
-			TickManager.RegisterTickGroup(this);
+			TickManager.Add(this);
 		}
 
 		public TickGroup(IEnumerable<Action> callbacks)
 		{
 			parameters = GroupParams.Default;
 			_callbacks = callbacks.ToList();
-			TickManager.RegisterTickGroup(this);
+			TickManager.Add(this);
 		}
 
 		public TickGroup(params Action[] callbacks)
 		{
 			parameters = GroupParams.Default;
 			_callbacks = callbacks.ToList();
-			TickManager.RegisterTickGroup(this);
+			TickManager.Add(this);
 		}
 
 		public TickGroup()
 		{
 			parameters = GroupParams.Default;
 			_callbacks = new List<Action>();
-			TickManager.RegisterTickGroup(this);
+			TickManager.Add(this);
 		}
 
 		#endregion
@@ -121,7 +118,7 @@ namespace TickSystem.Core
 		/// </summary>
 		public void Dispose()
 		{
-			TickManager.UnregisterTickGroup(this);
+			TickManager.Remove(this);
 			Clear();
 		}
 	}

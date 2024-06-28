@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace TickSystem
 {
+	/// <summary>
+	/// Manages the update loop for all <see cref="TickGroup"/> instances found in the <see cref="TickManager"/> class.
+	/// </summary>
 	[DisallowMultipleComponent]
 	public class TickUpdater : MonoBehaviour
 	{
@@ -40,14 +43,14 @@ namespace TickSystem
 				return;
 			}
 
-			TickManager.OnTickGroupRegistered += OnGroupRegistered;
-			TickManager.OnTickGroupUnregistered += OnGroupUnregistered;
+			TickManager.OnTickGroupAdded += TickGroupAdded;
+			TickManager.OnTickGroupRemoved += TickGroupRemoved;
 		}
 
 		private void OnDestroy()
 		{
-			TickManager.OnTickGroupRegistered -= OnGroupRegistered;
-			TickManager.OnTickGroupUnregistered -= OnGroupUnregistered;
+			TickManager.OnTickGroupAdded -= TickGroupAdded;
+			TickManager.OnTickGroupRemoved -= TickGroupRemoved;
 		}
 
 		private void Start()
@@ -59,7 +62,7 @@ namespace TickSystem
 			if (TickManager.TickGroupInstances.Count == 0) return;
 			foreach (var tickGroup in TickManager.TickGroupInstances)
 			{
-				OnGroupRegistered(tickGroup);
+				TickGroupAdded(tickGroup);
 			}
 		}
 
@@ -117,19 +120,19 @@ namespace TickSystem
 
 		#endregion
 
-		private void OnGroupRegistered(TickGroup tickGroup)
+		private void TickGroupAdded(TickGroup group)
 		{
 			// Check if the tick group is already registered
-			if (_groupsAndTimers.Exists(pair => pair.Key == tickGroup)) return;
+			if (_groupsAndTimers.Exists(pair => pair.Key == group)) return;
 
 			// Add the tick group to the list
-			_groupsAndTimers.Add(new MutableKeyValuePair<TickGroup, float>(tickGroup, 0f));
+			_groupsAndTimers.Add(new MutableKeyValuePair<TickGroup, float>(group, 0f));
 		}
 
-		private void OnGroupUnregistered(TickGroup tickGroup)
+		private void TickGroupRemoved(TickGroup group)
 		{
 			// Find the MutableKeyValuePair with the tick group so we can modify it before removing it
-			var groupValuePair = _groupsAndTimers.Find(pair => pair.Key == tickGroup);
+			var groupValuePair = _groupsAndTimers.Find(pair => pair.Key == group);
 			if (groupValuePair == null) return;
 
 			// Remove the tick group from the list

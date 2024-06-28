@@ -142,7 +142,7 @@ internal class TickSystemTests
 
 		var tickGroup = new TickGroup(groupParams);
 
-		var foundGroup = TickManager.FindTickGroup("TestGroup");
+		var foundGroup = TickManager.Find("TestGroup");
 
 		Assert.AreEqual(tickGroup, foundGroup, "TickManager did not return the correct TickGroup.");
 

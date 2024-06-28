@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace TickSystem
 {
+	/// <summary>
+	/// Wraps the base TickGroup to integrate the creation/modification of them using the Unity inspector.
+	/// </summary>
 	[CreateAssetMenu(fileName = "NewTickGroup", menuName = "Tick System/Tick Group")]
 	public class TickGroupAsset : ScriptableObject
 	{

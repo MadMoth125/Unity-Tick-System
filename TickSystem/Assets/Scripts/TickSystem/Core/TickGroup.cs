@@ -110,7 +110,7 @@ namespace TickSystem.Core
 		{
 			if (!parameters.active) return;
 			// using a for-loop to avoid garbage allocation
-			for (int i = 0; i < _callbacks.Count; i++) _callbacks[i]?.Invoke();
+			for (int i = _callbacks.Count; i > 0 ; --i) _callbacks[i]?.Invoke();
 		}
 
 		/// <summary>

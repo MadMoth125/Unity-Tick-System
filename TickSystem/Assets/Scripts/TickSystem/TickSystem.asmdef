@@ -1,9 +1,7 @@
 {
     "name": "TickSystem",
     "rootNamespace": "",
-    "references": [
-        "GUID:a1aa548cb3719294ebfe48d0f5d45ee1"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

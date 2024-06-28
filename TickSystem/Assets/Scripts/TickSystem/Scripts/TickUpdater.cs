@@ -52,8 +52,7 @@ namespace TickSystem
 
 		private void Start()
 		{
-			/*
-			 * The TickGroupAssets and TickManager execute before the TickUpdater is initialized,
+			/* The TickGroupAssets and TickManager execute before the TickUpdater is initialized,
 			 * so we need to manually register the tick groups that were already registered (if any).
 			 * However, any tick groups registered after the TickUpdater is initialized will be automatically registered.
 			 */

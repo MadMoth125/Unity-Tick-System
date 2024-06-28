@@ -45,10 +45,10 @@ namespace TickSystem.Core
 		#endregion
 
 		/// <summary>
-		/// Sets the parameters of the group.
+		/// Sets the parameters of the TickGroup.
 		/// </summary>
-		/// <param name="other">The GroupParams to copy values from.</param>
-		public void Set(GroupParams other)
+		/// <param name="other"></param>
+		public void Set(in GroupParams other)
 		{
 			this.name = other.name;
 			this.interval = other.interval;
@@ -57,12 +57,12 @@ namespace TickSystem.Core
 		}
 
 		/// <summary>
-		/// Sets the parameters of the group.
+		/// Sets the parameters of the TickGroup.
 		/// </summary>
-		/// <param name="name">The new name.</param>
-		/// <param name="interval">The new interval.</param>
-		/// <param name="active">The new active state.</param>
-		/// <param name="useRealTime">Whether to use real time.</param>
+		/// <param name="name"></param>
+		/// <param name="interval"></param>
+		/// <param name="active"></param>
+		/// <param name="useRealTime"></param>
 		public void Set(string name = "", float? interval = null, bool? active = null, bool? useRealTime = null)
 		{
 			if (name != "") this.name = name;
@@ -73,7 +73,7 @@ namespace TickSystem.Core
 
 		#region Overrides
 
-		public override string ToString() => $"[n: {name}, i: {interval}, a: {active}, rt: {useRealTime}]";
+		public override string ToString() => $"[name: {name}, interval: {interval}, active: {active}, useRealTime: {useRealTime}]";
 
 		public override bool Equals(object obj)
 		{

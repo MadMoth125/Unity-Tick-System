@@ -22,7 +22,7 @@ namespace TickSystem.Core
 		}
 
 		#endregion
-		
+
 		/// <summary>
 		/// Copies values from another MutableKeyValuePair instance.
 		/// </summary>
@@ -32,7 +32,7 @@ namespace TickSystem.Core
 			Key = other.Key;
 			Value = other.Value;
 		}
-		
+
 		/// <summary>
 		/// Copies values from a KeyValuePair instance.
 		/// </summary>
@@ -53,7 +53,7 @@ namespace TickSystem.Core
 			Key = key;
 			Value = value;
 		}
-		
+
 		/// <summary>
 		/// Deconstructs the pair into key and value.
 		/// </summary>
@@ -66,30 +66,19 @@ namespace TickSystem.Core
 		}
 
 		/// <summary>
-		/// Converts the instance to a KeyValuePair.
+		/// Returns a new instance as a standard <see cref="KeyValuePair"/>.
 		/// </summary>
-		/// <returns>A KeyValuePair representing the instance.</returns>
-		public KeyValuePair<TKey, TValue> AsKeyValuePair()
-		{
-			return new KeyValuePair<TKey, TValue>(Key, Value);
-		}
-		
-		public override string ToString()
-		{
-			return $"[{Key}, {Value}]";
-		}
+		public KeyValuePair<TKey, TValue> AsKeyValuePair() => new KeyValuePair<TKey, TValue>(Key, Value);
 
-		#region Operators
+		#region Overrides
+
+		public override string ToString() => $"[{Key}, {Value}]";
 
 		public static implicit operator MutableKeyValuePair<TKey, TValue>(KeyValuePair<TKey, TValue> pair)
-		{
-			return new MutableKeyValuePair<TKey, TValue>(pair);
-		}
-		
+			=> new(pair);
+
 		public static implicit operator KeyValuePair<TKey, TValue>(MutableKeyValuePair<TKey, TValue> pair)
-		{
-			return new KeyValuePair<TKey, TValue>(pair.Key, pair.Value);
-		}
+			=> new(pair.Key, pair.Value);
 
 		#endregion
 	}

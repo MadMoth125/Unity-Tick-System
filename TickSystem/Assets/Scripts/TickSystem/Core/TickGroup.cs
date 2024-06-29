@@ -21,52 +21,64 @@ namespace TickSystem.Core
 		public int CallbackCount => _callbacks.Count;
 
 		/// <summary>
-		/// The parameters for the group.
+		/// The parameters for the TickGroup.
 		/// </summary>
-		public GroupParams parameters;
+		public GroupParams Parameters;
 
 		private readonly List<Action> _callbacks;
 
 		#region Constructors
 
+		public TickGroup(string name, float interval)
+		{
+			Parameters = new GroupParams(name, interval, true, true);
+			TickManager_New.Add(this);
+		}
+
+		public TickGroup(string name, float interval, bool active, bool useRealTime)
+		{
+			Parameters = new GroupParams(name, interval, active, useRealTime);
+			TickManager_New.Add(this);
+		}
+
 		public TickGroup(GroupParams parameters, IEnumerable<Action> callbacks)
 		{
-			this.parameters = parameters;
+			this.Parameters = parameters;
 			_callbacks = callbacks.ToList();
 			TickManager_New.Add(this);
 		}
 
 		public TickGroup(GroupParams parameters, params Action[] callbacks)
 		{
-			this.parameters = parameters;
+			this.Parameters = parameters;
 			_callbacks = callbacks.ToList();
 			TickManager_New.Add(this);
 		}
 
 		public TickGroup(GroupParams parameters)
 		{
-			this.parameters = parameters;
+			this.Parameters = parameters;
 			_callbacks = new List<Action>();
 			TickManager_New.Add(this);
 		}
 
 		public TickGroup(IEnumerable<Action> callbacks)
 		{
-			parameters = GroupParams.Default;
+			Parameters = GroupParams.Default;
 			_callbacks = callbacks.ToList();
 			TickManager_New.Add(this);
 		}
 
 		public TickGroup(params Action[] callbacks)
 		{
-			parameters = GroupParams.Default;
+			Parameters = GroupParams.Default;
 			_callbacks = callbacks.ToList();
 			TickManager_New.Add(this);
 		}
 
 		public TickGroup()
 		{
-			parameters = GroupParams.Default;
+			Parameters = GroupParams.Default;
 			_callbacks = new List<Action>();
 			TickManager_New.Add(this);
 		}
@@ -76,7 +88,7 @@ namespace TickSystem.Core
 		public static bool CompareName(in TickGroup group, in string name)
 		{
 			return group != null &&
-			       group.parameters.name.Trim().Replace(" ", "") == name.Trim().Replace(" ", "");
+			       group.Parameters.name.Trim().Replace(" ", "") == name.Trim().Replace(" ", "");
 		}
 
 		/// <summary>
@@ -102,14 +114,17 @@ namespace TickSystem.Core
 		/// <summary>
 		/// Clears all callbacks from the group.
 		/// </summary>
-		public void Clear() => _callbacks.Clear();
+		public void Clear()
+		{
+			_callbacks.Clear();
+		}
 
 		/// <summary>
 		/// Invokes all callbacks in the group.
 		/// </summary>
 		public void Invoke()
 		{
-			if (!parameters.active) return;
+			if (!Parameters.active) return;
 			// using a for-loop to avoid garbage allocation
 			for (int i = _callbacks.Count - 1; i >= 0; i--) _callbacks?[i]?.Invoke();
 		}

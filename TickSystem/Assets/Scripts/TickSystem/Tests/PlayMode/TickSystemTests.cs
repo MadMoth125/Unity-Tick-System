@@ -40,7 +40,7 @@ internal class TickSystemTests
 
 		var tickGroup = new TickGroup(paramsA);
 
-		var paramsB = tickGroup.parameters;
+		var paramsB = tickGroup.Parameters;
 
 		bool hasParams = paramsA == paramsB;
 
@@ -57,7 +57,7 @@ internal class TickSystemTests
 
 		var paramsA = GroupParams.Default;
 
-		var paramsB = tickGroup.parameters;
+		var paramsB = tickGroup.Parameters;
 
 		bool hasParams = paramsA == paramsB;
 
@@ -86,7 +86,7 @@ internal class TickSystemTests
 		group.Add(TestListenerMethod);
 
 		// wait for a short time (enough time for the group to tick)
-		yield return new WaitForSeconds(GetForgivingInterval(group.parameters));
+		yield return new WaitForSeconds(GetForgivingInterval(group.Parameters));
 
 		// dispose of the group
 		group.Dispose();
@@ -119,7 +119,7 @@ internal class TickSystemTests
 		group.Add(TestListenerMethod);
 
 		// wait for a short time (enough time for the group to tick)
-		yield return new WaitForSeconds(GetForgivingInterval(group.parameters));
+		yield return new WaitForSeconds(GetForgivingInterval(group.Parameters));
 
 		// dispose of the group
 		group.Dispose();

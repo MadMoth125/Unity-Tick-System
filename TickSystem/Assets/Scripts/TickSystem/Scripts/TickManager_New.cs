@@ -52,11 +52,7 @@ namespace TickSystem
 		/// <param name="tickGroup"></param>
 		public static void Add(TickGroup tickGroup)
 		{
-			if (_instance == null)
-			{
-				Debug.LogError($"Failed to add '{nameof(TickGroup)}': '{nameof(TickManager_New)}' manager not initialized.");
-				return;
-			}
+			if (_instance == null) return;
 
 			if (tickGroup == null)
 			{
@@ -80,11 +76,7 @@ namespace TickSystem
 		/// <param name="tickGroup"></param>
 		public static void Remove(TickGroup tickGroup)
 		{
-			if (_instance == null)
-			{
-				Debug.LogError($"Failed to remove '{nameof(TickGroup)}': '{nameof(TickManager_New)}' manager not initialized.");
-				return;
-			}
+			if (_instance == null) return;
 
 			if (tickGroup == null)
 			{

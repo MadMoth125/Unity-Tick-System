@@ -31,7 +31,7 @@ namespace TickSystem.Core
 
 		public TickGroup(string name, float interval)
 		{
-			Parameters = new GroupParams(name, interval, true, true);
+			Parameters = new GroupParams(name, interval, true, false);
 			TickManager_New.Add(this);
 		}
 

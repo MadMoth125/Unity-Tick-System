@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace TickSystem
 {
+	[DisallowMultipleComponent]
 	public class TickManager_New : MonoBehaviour
 	{
 		/// <summary>

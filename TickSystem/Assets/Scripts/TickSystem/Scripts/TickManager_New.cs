@@ -54,7 +54,7 @@ namespace TickSystem
 		{
 			if (_instance == null)
 			{
-				Debug.LogError($"Failed to add '{nameof(TickGroup)}': '{nameof(TickManager_New)}' instance not initialized.");
+				Debug.LogError($"Failed to add '{nameof(TickGroup)}': '{nameof(TickManager_New)}' manager not initialized.");
 				return;
 			}
 
@@ -82,7 +82,7 @@ namespace TickSystem
 		{
 			if (_instance == null)
 			{
-				Debug.LogError($"Failed to remove '{nameof(TickGroup)}': '{nameof(TickManager_New)}' instance not initialized.");
+				Debug.LogError($"Failed to remove '{nameof(TickGroup)}': '{nameof(TickManager_New)}' manager not initialized.");
 				return;
 			}
 
@@ -172,6 +172,9 @@ namespace TickSystem
 			// Redundant check, but just making sure
 			// it doesn't update groups when disabled.
 			if (!enabled) return;
+
+			// Early return if we have no TickGroups
+			if (GroupsAndTimers.Count == 0) return;
 
 			// Using a for-loop to avoid the garbage allocation of a foreach-loop
 			for (int i = 0; i < GroupsAndTimers.Count; i++)

@@ -75,7 +75,8 @@ namespace TickSystem.Core
 
 		public static bool CompareName(in TickGroup group, in string name)
 		{
-			return group.parameters.name.Trim().Replace(" ", "") == name.Trim().Replace(" ", "");
+			return group != null &&
+			       group.parameters.name.Trim().Replace(" ", "") == name.Trim().Replace(" ", "");
 		}
 
 		/// <summary>

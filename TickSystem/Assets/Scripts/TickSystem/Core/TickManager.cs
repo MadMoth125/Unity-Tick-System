@@ -6,6 +6,7 @@ namespace TickSystem.Core
 	/// <summary>
 	/// Serves as a centralized system to manage and reference any existing TickGroups.
 	/// </summary>
+	[Obsolete]
 	public static class TickManager
 	{
 		public static event Action<TickGroup> OnTickGroupAdded = delegate {  };

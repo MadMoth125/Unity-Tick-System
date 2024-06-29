@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TickSystem.Core;
 using UnityEngine;
@@ -8,6 +9,7 @@ namespace TickSystem
 	/// Manages the update loop for all <see cref="TickGroup"/> instances found in the <see cref="TickManager"/> class.
 	/// </summary>
 	[DisallowMultipleComponent]
+	[Obsolete]
 	public class TickUpdater : MonoBehaviour
 	{
 		/// <summary>

@@ -4,8 +4,7 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "TickSystem",
-        "TickSystem.Core"
+        "TickSystem"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

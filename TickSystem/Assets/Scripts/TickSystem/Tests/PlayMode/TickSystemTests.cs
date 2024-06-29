@@ -1,8 +1,7 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using NUnit.Framework;
+using TickSystem;
 using TickSystem.Core;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -14,11 +13,11 @@ internal class TickSystemTests
 	{
 		var tickGroup = new TickGroup();
 
-		bool registered = TickManager.TickGroupInstances.Contains(tickGroup);
+		bool registered = TickManager_New.Contains(tickGroup);
 
 		tickGroup.Dispose();
 
-		Assert.IsTrue(registered, "TickGroup couldn't be found in the TickManager's registered instances.");
+		Assert.IsTrue(registered, $"{nameof(TickGroup)} couldn't be found in the {nameof(TickManager_New)}'s registered instances.");
 	}
 
 	[Test]
@@ -28,9 +27,9 @@ internal class TickSystemTests
 
 		tickGroup.Dispose();
 
-		bool registered = TickManager.TickGroupInstances.Contains(tickGroup);
+		bool registered = TickManager_New.Contains(tickGroup);
 
-		Assert.IsFalse(registered, "TickGroup was found in the TickManager's registered instances after being disposed.");
+		Assert.IsFalse(registered, $"{nameof(TickGroup)} was found in the {nameof(TickManager_New)}'s registered instances after being disposed.");
 	}
 
 	[Test]
@@ -46,7 +45,7 @@ internal class TickSystemTests
 
 		tickGroup.Dispose();
 
-		Assert.IsTrue(hasParams, "TickGroup was not initialized with the provided parameters:\n" +
+		Assert.IsTrue(hasParams, $"{nameof(TickGroup)} was not initialized with the provided parameters:\n" +
 		                         DisplayGroupParamStrings(paramsA, paramsB));
 	}
 
@@ -63,21 +62,21 @@ internal class TickSystemTests
 
 		tickGroup.Dispose();
 
-		Assert.IsTrue(hasParams, "TickGroup was not initialized with the default parameters:\n" +
+		Assert.IsTrue(hasParams, $"{nameof(TickGroup)} was not initialized with the default parameters:\n" +
 		                         DisplayGroupParamStrings(paramsA, paramsB));
 	}
 
 	[UnityTest]
 	public IEnumerator TickGroup_AddListenerMethod_CallsMethod()
 	{
-		// save the previous state of the TickManager
-		bool prevManagerState = TickManager.Active;
+		// save the previous state of the TickManager_New
+		bool prevManagerState = TickManager_New.Enabled;
 
 		// declare a variable to count the number of times the listener method is called
-		int tickCount = 0; // should be 1
+		int tickCount = 0; // should be 1 at end of test
 
-		// enable the TickManager
-		TickManager.Active = true;
+		// enable the TickManager_New
+		TickManager_New.Enabled = true;
 
 		// create a new TickGroup
 		var group = new TickGroup(GroupParams.Default);
@@ -90,11 +89,11 @@ internal class TickSystemTests
 
 		// dispose of the group
 		group.Dispose();
-		TickManager.Active = prevManagerState;
+		TickManager_New.Enabled = prevManagerState;
 
 		// check if the listener method has been called
-		Assert.IsTrue(tickCount > 0, "TickGroup did not call the listener method.");
-		Assert.IsFalse(tickCount > 1, "TickGroup called the listener method more than once.");
+		Assert.IsTrue(tickCount > 0, $"{nameof(TickGroup)} did not call the listener method.");
+		Assert.IsFalse(tickCount > 1, $"{nameof(TickGroup)} called the listener method more than once.");
 
 		yield break;
 
@@ -102,15 +101,15 @@ internal class TickSystemTests
 	}
 
 	[UnityTest]
-	public IEnumerator TickManager_Disabled_PreventTick()
+	public IEnumerator TickManager_New_Disabled_PreventTick()
 	{
-		// save the previous state of the TickManager
-		bool prevManagerState = TickManager.Active;
+		// save the previous state of the TickManager_New
+		bool prevManagerState = TickManager_New.Enabled;
 
 		int tickCount = 0; // should remain 0
 
-		// disable the TickManager
-		TickManager.Active = false;
+		// disable the TickManager_New
+		TickManager_New.Enabled = false;
 
 		// create a new TickGroup
 		var group = new TickGroup(GroupParams.Default);
@@ -124,11 +123,11 @@ internal class TickSystemTests
 		// dispose of the group
 		group.Dispose();
 
-		// reset the TickManager to its previous state
-		TickManager.Active = prevManagerState;
+		// reset the TickManager_New to its previous state
+		TickManager_New.Enabled = prevManagerState;
 
 		// check if the listener method has been called
-		Assert.IsTrue(tickCount < 1, "TickManager.Active = false did not prevent TickGroup from ticking.");
+		Assert.IsTrue(tickCount < 1, $"'{nameof(TickManager_New)}.{nameof(TickManager_New.Enabled)} = false' did not prevent {nameof(TickGroup)} from ticking.");
 
 		yield break;
 
@@ -136,15 +135,15 @@ internal class TickSystemTests
 	}
 
 	[Test]
-	public void TickManager_FindTickGroup_ReturnsTickGroup()
+	public void TickManager_New_FindTickGroup_ReturnsTickGroup()
 	{
 		GroupParams groupParams = new GroupParams("TestGroup", 0.1f, true, true);
 
 		var tickGroup = new TickGroup(groupParams);
 
-		var foundGroup = TickManager.Find("TestGroup");
+		var foundGroup = TickManager_New.Find("TestGroup");
 
-		Assert.AreEqual(tickGroup, foundGroup, "TickManager did not return the correct TickGroup.");
+		Assert.AreEqual(tickGroup, foundGroup, $"{nameof(TickManager_New)} did not return the correct {nameof(TickGroup)}.");
 
 		tickGroup.Dispose();
 		foundGroup.Dispose();

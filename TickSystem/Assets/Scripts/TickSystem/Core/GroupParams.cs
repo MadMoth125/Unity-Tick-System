@@ -12,8 +12,10 @@ namespace TickSystem.Core
 
 		/// <summary>
 		/// Default parameters for a tick group.
-		/// Values: name = "TickGroup", interval = 0.05f, active = true, useRealTime = false.
 		/// </summary>
+		/// <remarks>
+		/// name = "TickGroup", interval = 0.05f, active = true, useRealTime = false.
+		/// </remarks>
 		public static GroupParams Default => new GroupParams("TickGroup", 0.05f, true, false);
 
 		#region Constructors

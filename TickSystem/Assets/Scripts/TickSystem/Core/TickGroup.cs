@@ -33,42 +33,42 @@ namespace TickSystem.Core
 		{
 			this.parameters = parameters;
 			_callbacks = callbacks.ToList();
-			TickManager.Add(this);
+			TickManager_New.Add(this);
 		}
 
 		public TickGroup(GroupParams parameters, params Action[] callbacks)
 		{
 			this.parameters = parameters;
 			_callbacks = callbacks.ToList();
-			TickManager.Add(this);
+			TickManager_New.Add(this);
 		}
 
 		public TickGroup(GroupParams parameters)
 		{
 			this.parameters = parameters;
 			_callbacks = new List<Action>();
-			TickManager.Add(this);
+			TickManager_New.Add(this);
 		}
 
 		public TickGroup(IEnumerable<Action> callbacks)
 		{
 			parameters = GroupParams.Default;
 			_callbacks = callbacks.ToList();
-			TickManager.Add(this);
+			TickManager_New.Add(this);
 		}
 
 		public TickGroup(params Action[] callbacks)
 		{
 			parameters = GroupParams.Default;
 			_callbacks = callbacks.ToList();
-			TickManager.Add(this);
+			TickManager_New.Add(this);
 		}
 
 		public TickGroup()
 		{
 			parameters = GroupParams.Default;
 			_callbacks = new List<Action>();
-			TickManager.Add(this);
+			TickManager_New.Add(this);
 		}
 
 		#endregion
@@ -119,7 +119,7 @@ namespace TickSystem.Core
 		/// </summary>
 		public void Dispose()
 		{
-			TickManager.Remove(this);
+			TickManager_New.Remove(this);
 			Clear();
 		}
 	}

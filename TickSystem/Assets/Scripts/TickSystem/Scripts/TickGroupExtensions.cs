@@ -4,7 +4,7 @@ namespace TickSystem
 	/// Extension methods for <see cref="TickGroup"/> for
 	/// easier access to <see cref="GroupParams"/> properties.
 	/// </summary>
-	public static class TickExtensions
+	public static class TickGroupExtensions
 	{
 		/// <summary>
 		/// Gets the name of the TickGroup.

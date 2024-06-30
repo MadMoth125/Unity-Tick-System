@@ -22,7 +22,7 @@ namespace TickSystem
 			{
 				if (active == value) return;
 				active = value;
-				GetTickGroup().Active(value);
+				GetTickGroup().SetEnabled(value);
 			}
 		}
 
@@ -37,7 +37,7 @@ namespace TickSystem
 			{
 				if (useRealTime == value) return;
 				useRealTime = value;
-				GetTickGroup().UseRealTime(value);
+				GetTickGroup().SetRealTime(value);
 			}
 		}
 
@@ -51,7 +51,7 @@ namespace TickSystem
 			{
 				if (tickRate == value) return;
 				tickRate = value;
-				GetTickGroup().Interval(1f / value);
+				GetTickGroup().SetInterval(1f / value);
 			}
 		}
 

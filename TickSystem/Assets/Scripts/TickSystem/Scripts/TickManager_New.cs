@@ -62,7 +62,7 @@ namespace TickSystem
 
 			if (Contains(tickGroup))
 			{
-				Debug.LogWarning($"Failed to add '{nameof(TickGroup)}.{tickGroup.Name()}': Instance already exists.", _instance);
+				Debug.LogWarning($"Failed to add '{nameof(TickGroup)}.{tickGroup.GetName()}': Instance already exists.", _instance);
 				return;
 			}
 
@@ -86,7 +86,7 @@ namespace TickSystem
 
 			if (!Contains(tickGroup))
 			{
-				Debug.LogWarning($"Failed to remove '{nameof(TickGroup)}.{tickGroup.Name()}': Instance doesn't exists.", _instance);
+				Debug.LogWarning($"Failed to remove '{nameof(TickGroup)}.{tickGroup.GetName()}': Instance doesn't exists.", _instance);
 				return;
 			}
 
@@ -173,14 +173,14 @@ namespace TickSystem
 			{
 				// Filtering groups that won't be ticking
 				if (GroupsAndTimers[i] == null) continue;
-				if (!GroupsAndTimers[i].Key.Active()) continue;
+				if (!GroupsAndTimers[i].Key.IsEnabled()) continue;
 				if (GroupsAndTimers[i].Key.Count == 0) continue;
-				if (GroupsAndTimers[i].Key.Interval() <= 0) continue;
+				if (GroupsAndTimers[i].Key.GetInterval() <= 0) continue;
 
-				if (GroupsAndTimers[i].Key.UseRealTime())
+				if (GroupsAndTimers[i].Key.IsRealTime())
 				{
 					float halfDelta = Time.unscaledDeltaTime * 0.5f;
-					if ((GroupsAndTimers[i].Value += halfDelta) <= GroupsAndTimers[i].Key.Interval())
+					if ((GroupsAndTimers[i].Value += halfDelta) <= GroupsAndTimers[i].Key.GetInterval())
 					{
 						GroupsAndTimers[i].Value += halfDelta;
 						continue;
@@ -190,7 +190,7 @@ namespace TickSystem
 				{
 					// using unscaledDeltaTime and timeScale to fix sync issues with deltaTime
 					float halfDelta = (Time.unscaledDeltaTime * Time.timeScale) * 0.5f;
-					if ((GroupsAndTimers[i].Value += halfDelta) <= GroupsAndTimers[i].Key.Interval())
+					if ((GroupsAndTimers[i].Value += halfDelta) <= GroupsAndTimers[i].Key.GetInterval())
 					{
 						GroupsAndTimers[i].Value += halfDelta;
 						continue;

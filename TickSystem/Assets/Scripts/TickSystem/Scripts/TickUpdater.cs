@@ -80,13 +80,13 @@ namespace TickSystem
 				if (_groupsAndTimers[i] == null) continue;
 
 				// Skip inactive tick groups
-				if (!_groupsAndTimers[i].Key.Active()) continue;
+				if (!_groupsAndTimers[i].Key.IsEnabled()) continue;
 
 				// Skip tick groups with no callbacks
 				if (_groupsAndTimers[i].Key.Count == 0) continue;
 
 				// Skip tick groups with a tick rate of 0
-				if (_groupsAndTimers[i].Key.Interval() <= 0) continue;
+				if (_groupsAndTimers[i].Key.GetInterval() <= 0) continue;
 
 				/* We split the deltaTime values in half to increment the timer in two steps rather than one.
 				 * This is meant to alleviate the issue of the timer overshooting the specified interval value.
@@ -95,10 +95,10 @@ namespace TickSystem
 				 * The timer will still never reach the exact interval value and will overshoot it,
 				 * albeit by a smaller margin using the split method.
 				 */
-				if (_groupsAndTimers[i].Key.UseRealTime())
+				if (_groupsAndTimers[i].Key.IsRealTime())
 				{
 					float halfDelta = Time.unscaledDeltaTime * 0.5f;
-					if ((_groupsAndTimers[i].Value += halfDelta) <= _groupsAndTimers[i].Key.Interval())
+					if ((_groupsAndTimers[i].Value += halfDelta) <= _groupsAndTimers[i].Key.GetInterval())
 					{
 						_groupsAndTimers[i].Value += halfDelta;
 						continue;
@@ -108,7 +108,7 @@ namespace TickSystem
 				{
 					// using unscaledDeltaTime and timeScale to fix sync issues with deltaTime
 					float halfDelta = (Time.unscaledDeltaTime * Time.timeScale) * 0.5f;
-					if ((_groupsAndTimers[i].Value += halfDelta) <= _groupsAndTimers[i].Key.Interval())
+					if ((_groupsAndTimers[i].Value += halfDelta) <= _groupsAndTimers[i].Key.GetInterval())
 					{
 						_groupsAndTimers[i].Value += halfDelta;
 						continue;

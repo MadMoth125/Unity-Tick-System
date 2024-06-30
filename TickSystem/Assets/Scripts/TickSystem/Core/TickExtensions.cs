@@ -32,14 +32,14 @@ namespace TickSystem.Core
 		/// Gets whether the TickGroup is active and can tick
 		/// </summary>
 		/// <param name="group"></param>
-		public static bool Active(this TickGroup group) => group.Parameters.active;
+		public static bool Active(this TickGroup group) => group.Parameters.enabled;
 
 		/// <summary>
 		/// Sets whether the TickGroup is active and can tick
 		/// </summary>
 		/// <param name="group"></param>
 		/// <param name="active"></param>
-		public static void Active(this TickGroup group, bool active) => group.Parameters.active = active;
+		public static void Active(this TickGroup group, bool active) => group.Parameters.enabled = active;
 
 		/// <summary>
 		/// Gets whether the TickGroup ticks in real time

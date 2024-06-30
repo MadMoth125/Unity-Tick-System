@@ -158,8 +158,8 @@ internal class TickSystemTests
 		       $"B.name - {b.name}\n" +
 		       $"A.interval - {a.interval}\n" +
 		       $"B.interval - {b.interval}\n" +
-		       $"A.active - {a.active}\n" +
-		       $"B.active - {b.active}\n" +
+		       $"A.active - {a.enabled}\n" +
+		       $"B.active - {b.enabled}\n" +
 		       $"A.useRealTime - {a.useRealTime}\n" +
 		       $"B.useRealTime - {b.useRealTime}";
 	}

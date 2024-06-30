@@ -85,7 +85,16 @@ namespace TickSystem.Core
 
 		#endregion
 
-		public static bool CompareName(in TickGroup group, in string name)
+		/// <summary>
+		/// Checks if the TickGroup name matches the provided name.
+		/// </summary>
+		/// <param name="group"></param>
+		/// <param name="name"></param>
+		/// <returns>Whether the names are equal.</returns>
+		/// <remarks>
+		/// Strings are compared with all whitespace being removed.
+		/// </remarks>
+		public static bool CompareName(TickGroup group, in string name)
 		{
 			return group != null &&
 			       group.Parameters.name.Trim().Replace(" ", "") == name.Trim().Replace(" ", "");

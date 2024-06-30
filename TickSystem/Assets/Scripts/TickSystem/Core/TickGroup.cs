@@ -128,8 +128,12 @@ namespace TickSystem.Core
 		public void Invoke()
 		{
 			if (!Parameters.enabled) return;
-			// using a for-loop to avoid garbage allocation
-			for (int i = _callbacks.Count - 1; i >= 0; i--) _callbacks?[i]?.Invoke();
+
+			// Using a for-loop to avoid garbage allocation
+			for (int i = _callbacks.Count - 1; i >= 0; i--)
+			{
+				_callbacks?[i]?.Invoke();
+			}
 		}
 
 		/// <summary>

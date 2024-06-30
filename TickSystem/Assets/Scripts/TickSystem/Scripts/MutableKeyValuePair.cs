@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace TickSystem.Core
+namespace TickSystem
 {
 	public class MutableKeyValuePair<TKey, TValue>
 	{

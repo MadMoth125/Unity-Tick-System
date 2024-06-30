@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using NUnit.Framework;
 using TickSystem;
-using TickSystem.Core;
 using UnityEngine;
 using UnityEngine.TestTools;
 

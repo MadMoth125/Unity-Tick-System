@@ -1,4 +1,4 @@
-namespace TickSystem.Core
+namespace TickSystem
 {
 	/// <summary>
 	/// Extension methods for <see cref="TickGroup"/> for

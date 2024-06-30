@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace TickSystem.Core
+namespace TickSystem
 {
 	/// <summary>
 	/// Encapsulates a collection of callbacks (actions) that should be

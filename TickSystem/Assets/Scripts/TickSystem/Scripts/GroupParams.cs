@@ -1,6 +1,6 @@
 using System;
 
-namespace TickSystem.Core
+namespace TickSystem
 {
 	[Serializable]
 	public struct GroupParams

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TickSystem.Core;
 using UnityEngine;
 
 namespace TickSystem

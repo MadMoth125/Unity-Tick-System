@@ -6,7 +6,7 @@ using UnityEngine;
 namespace TickSystem
 {
 	[DisallowMultipleComponent]
-	public class TickManager_New : MonoBehaviour
+	public class TickManager : MonoBehaviour
 	{
 		/// <summary>
 		/// Invoked when a unique TickGroup has been added to the manager
@@ -31,7 +31,7 @@ namespace TickSystem
 		}
 
 		// private singleton instance
-		private static TickManager_New _instance;
+		private static TickManager _instance;
 
 		// private static TickGroup reference collection
 		private static readonly List<MutableKeyValuePair<TickGroup, float>> GroupsAndTimers = new();
@@ -41,7 +41,7 @@ namespace TickSystem
 		private static void Init()
 		{
 			if (_instance != null) return;
-			var tempInst = new GameObject("TickManager").AddComponent<TickManager_New>();
+			var tempInst = new GameObject("TickManager").AddComponent<TickManager>();
 			DontDestroyOnLoad(tempInst.gameObject);
 		}
 
@@ -150,7 +150,7 @@ namespace TickSystem
 		{
 			if (_instance != null)
 			{
-				Debug.Log($"Multiple instances of '{nameof(TickManager_New)}' detected. Destroying...");
+				Debug.Log($"Multiple instances of '{nameof(TickManager)}' detected. Destroying...");
 				Destroy(this); // Remove the script from the Object
 				return;
 			}

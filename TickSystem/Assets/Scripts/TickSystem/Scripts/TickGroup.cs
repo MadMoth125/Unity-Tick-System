@@ -32,49 +32,49 @@ namespace TickSystem
 		public TickGroup(string name, float interval, bool? active = null, bool? useRealTime = null)
 		{
 			Parameters = new GroupParams(name, interval, active ?? true, useRealTime ?? false);
-			TickManager_New.Add(this);
+			TickManager.Add(this);
 		}
 
 		public TickGroup(GroupParams parameters)
 		{
 			Parameters = parameters;
 			_callbacks = new List<Action>();
-			TickManager_New.Add(this);
+			TickManager.Add(this);
 		}
 
 		public TickGroup(GroupParams parameters, IEnumerable<Action> callbacks)
 		{
 			Parameters = parameters;
 			_callbacks = callbacks.ToList();
-			TickManager_New.Add(this);
+			TickManager.Add(this);
 		}
 
 		public TickGroup(GroupParams parameters, params Action[] callbacks)
 		{
 			Parameters = parameters;
 			_callbacks = callbacks.ToList();
-			TickManager_New.Add(this);
+			TickManager.Add(this);
 		}
 
 		public TickGroup(IEnumerable<Action> callbacks)
 		{
 			Parameters = GroupParams.Default;
 			_callbacks = callbacks.ToList();
-			TickManager_New.Add(this);
+			TickManager.Add(this);
 		}
 
 		public TickGroup(params Action[] callbacks)
 		{
 			Parameters = GroupParams.Default;
 			_callbacks = callbacks.ToList();
-			TickManager_New.Add(this);
+			TickManager.Add(this);
 		}
 
 		public TickGroup()
 		{
 			Parameters = GroupParams.Default;
 			_callbacks = new List<Action>();
-			TickManager_New.Add(this);
+			TickManager.Add(this);
 		}
 
 		#endregion
@@ -141,7 +141,7 @@ namespace TickSystem
 		/// </summary>
 		public void Dispose()
 		{
-			TickManager_New.Remove(this);
+			TickManager.Remove(this);
 			Clear();
 		}
 	}

@@ -10,142 +10,141 @@ internal class TickSystemTests
 	[Test]
 	public void TickGroup_Instantiated_AddedToManager()
 	{
-		var tickGroup = new TickGroup();
+			// Arrange
+			TickGroup tickGroup = new TickGroup();
 
-		bool registered = TickManager.Contains(tickGroup);
+			// Act
+			bool registered = TickManager.Contains(tickGroup);
+			tickGroup.Dispose();
 
-		tickGroup.Dispose();
-
-		Assert.IsTrue(registered, $"{nameof(TickGroup)} couldn't be found in the {nameof(TickManager)}'s registered instances.");
+			// Assert
+			Assert.IsTrue(registered, $"{nameof(TickGroup)} couldn't be found in the {nameof(TickManager)}'s registered instances.");
 	}
 
 	[Test]
 	public void TickGroup_Disposed_RemovedFromManager()
 	{
-		var tickGroup = new TickGroup();
+			// Arrange
+			TickGroup tickGroup = new TickGroup();
+			tickGroup.Dispose();
 
-		tickGroup.Dispose();
+			// Act
+			bool registered = TickManager.Contains(tickGroup);
 
-		bool registered = TickManager.Contains(tickGroup);
-
-		Assert.IsFalse(registered, $"{nameof(TickGroup)} was found in the {nameof(TickManager)}'s registered instances after being disposed.");
+			// Assert
+			Assert.IsFalse(registered, $"{nameof(TickGroup)} was found in the {nameof(TickManager)}'s registered instances after being disposed.");
 	}
 
 	[Test]
 	public void TickGroup_InitializedWithParams_HasSameParams()
 	{
-		var paramsA = new GroupParams("Test_TickGroup", 1f, true, true);
+			// Arrange
+			GroupParams paramsA = new GroupParams("Test_TickGroup", 1f, true, true);
+			TickGroup tickGroup = new TickGroup(paramsA);
 
-		var tickGroup = new TickGroup(paramsA);
+			// Act
+			GroupParams paramsB = tickGroup.Parameters;
+			bool hasParams = paramsA == paramsB;
+			tickGroup.Dispose();
 
-		var paramsB = tickGroup.Parameters;
-
-		bool hasParams = paramsA == paramsB;
-
-		tickGroup.Dispose();
-
-		Assert.IsTrue(hasParams, $"{nameof(TickGroup)} was not initialized with the provided parameters:\n" +
-		                         DisplayGroupParamStrings(paramsA, paramsB));
+			// Assert
+			Assert.IsTrue(hasParams, $"{nameof(TickGroup)} was not initialized with the provided parameters:\n" +
+															 DisplayGroupParamStrings(paramsA, paramsB));
 	}
 
 	[Test]
 	public void TickGroup_InitializedWithNoParams_HasDefaultParams()
 	{
-		var tickGroup = new TickGroup();
+			// Arrange
+			TickGroup tickGroup = new TickGroup();
+			GroupParams paramsA = GroupParams.Default;
+			GroupParams paramsB = tickGroup.Parameters;
 
-		var paramsA = GroupParams.Default;
+			// Act
+			bool hasParams = paramsA == paramsB;
+			tickGroup.Dispose();
 
-		var paramsB = tickGroup.Parameters;
-
-		bool hasParams = paramsA == paramsB;
-
-		tickGroup.Dispose();
-
-		Assert.IsTrue(hasParams, $"{nameof(TickGroup)} was not initialized with the default parameters:\n" +
-		                         DisplayGroupParamStrings(paramsA, paramsB));
+			// Assert
+			Assert.IsTrue(hasParams, $"{nameof(TickGroup)} was not initialized with the default parameters:\n" +
+															 DisplayGroupParamStrings(paramsA, paramsB));
 	}
 
 	[UnityTest]
-	public IEnumerator TickGroup_AddListenerMethod_CallsMethod()
+	public IEnumerator TickGroup_AddCallback_InvokeCallback()
 	{
-		// save the previous state of the TickManager_New
-		bool prevManagerState = TickManager.Enabled;
+			// Arrange
+			bool prevManagerState = TickManager.Enabled;
+			TickManager.Enabled = true;
+			int tickCount = 0;
+			TickGroup group = new TickGroup(GroupParams.Default);
+			group.Add(TestListenerMethod);
 
-		// declare a variable to count the number of times the listener method is called
-		int tickCount = 0; // should be 1 at end of test
+			// Act
+			yield return new WaitForSeconds(GetForgivingInterval(group.Parameters));
+			group.Dispose();
+			TickManager.Enabled = prevManagerState;
 
-		// enable the TickManager_New
-		TickManager.Enabled = true;
+			// Assert
+			Assert.IsTrue(tickCount > 0, $"{nameof(TickGroup)} did not call the listener method.");
+			Assert.IsFalse(tickCount > 1, $"{nameof(TickGroup)} called the listener method more than once.");
 
-		// create a new TickGroup
-		var group = new TickGroup(GroupParams.Default);
+			yield break;
 
-		// add a listener method to the group
-		group.Add(TestListenerMethod);
-
-		// wait for a short time (enough time for the group to tick)
-		yield return new WaitForSeconds(GetForgivingInterval(group.Parameters));
-
-		// dispose of the group
-		group.Dispose();
-		TickManager.Enabled = prevManagerState;
-
-		// check if the listener method has been called
-		Assert.IsTrue(tickCount > 0, $"{nameof(TickGroup)} did not call the listener method.");
-		Assert.IsFalse(tickCount > 1, $"{nameof(TickGroup)} called the listener method more than once.");
-
-		yield break;
-
-		void TestListenerMethod() => tickCount++;
+			void TestListenerMethod() => tickCount++;
 	}
 
 	[UnityTest]
-	public IEnumerator TickManager_New_Disabled_PreventTick()
+	public IEnumerator TickManager_Disabled_PreventTick()
 	{
-		// save the previous state of the TickManager_New
-		bool prevManagerState = TickManager.Enabled;
+			// Arrange
+			bool prevManagerState = TickManager.Enabled;
+			TickManager.Enabled = false;
+			int tickCount = 0;
+			TickGroup group = new TickGroup(GroupParams.Default);
+			group.Add(TestListenerMethod);
 
-		int tickCount = 0; // should remain 0
+			// Act
+			yield return new WaitForSeconds(GetForgivingInterval(group.Parameters));
+			group.Dispose();
+			TickManager.Enabled = prevManagerState;
 
-		// disable the TickManager_New
-		TickManager.Enabled = false;
+			// Assert
+			Assert.IsTrue(tickCount < 1, $"'{nameof(TickManager)}.{nameof(TickManager.Enabled)} = false' did not prevent {nameof(TickGroup)} from ticking.");
 
-		// create a new TickGroup
-		var group = new TickGroup(GroupParams.Default);
+			yield break;
 
-		// add a listener method to the group
-		group.Add(TestListenerMethod);
-
-		// wait for a short time (enough time for the group to tick)
-		yield return new WaitForSeconds(GetForgivingInterval(group.Parameters));
-
-		// dispose of the group
-		group.Dispose();
-
-		// reset the TickManager_New to its previous state
-		TickManager.Enabled = prevManagerState;
-
-		// check if the listener method has been called
-		Assert.IsTrue(tickCount < 1, $"'{nameof(TickManager)}.{nameof(TickManager.Enabled)} = false' did not prevent {nameof(TickGroup)} from ticking.");
-
-		yield break;
-
-		void TestListenerMethod() => tickCount++;
+			void TestListenerMethod() => tickCount++;
 	}
 
 	[Test]
-	public void TickManager_New_FindTickGroup_ReturnsTickGroup()
+	public void TickManager_FindTickGroup_ReturnsTickGroup()
 	{
-		GroupParams groupParams = new GroupParams("TestGroup", 0.1f, true, true);
+		// Arrange
+		GroupParams groupParams = GroupParams.Default;
+		TickGroup tickGroup = new TickGroup(groupParams);
 
-		var tickGroup = new TickGroup(groupParams);
-
-		var foundGroup = TickManager.Find("TestGroup");
-
-		Assert.AreEqual(tickGroup, foundGroup, $"{nameof(TickManager)} did not return the correct {nameof(TickGroup)}.");
-
+		// Act
+		TickGroup foundGroup = TickManager.Find(GroupParams.Default.name);
 		tickGroup.Dispose();
-		foundGroup.Dispose();
+
+		// Assert
+		Assert.AreEqual(tickGroup, foundGroup, $"{nameof(TickManager)} did not return the correct {nameof(TickGroup)}.");
+	}
+
+	[Test]
+	public void TickManager_FindTickGroup_ReturnsTrue()
+	{
+		// Arrange
+		GroupParams groupParams = GroupParams.Default;
+		TickGroup tickGroup = new TickGroup(groupParams);
+
+		// Act
+		bool validGroup = TickManager.Find(GroupParams.Default.name, out TickGroup foundGroup);
+		tickGroup.Dispose();
+
+		// Assert
+		Assert.IsTrue(validGroup, $"{nameof(TickManager)} did not return 'true' when finding {nameof(TickGroup)}.");
+		Assert.AreEqual(tickGroup, foundGroup, $"{nameof(TickManager)} did not output the correct {nameof(TickGroup)}.");
 	}
 
 	/// <summary>
@@ -154,13 +153,13 @@ internal class TickSystemTests
 	private static string DisplayGroupParamStrings(GroupParams a, GroupParams b)
 	{
 		return $"A.name - {a.name}\n" +
-		       $"B.name - {b.name}\n" +
-		       $"A.interval - {a.interval}\n" +
-		       $"B.interval - {b.interval}\n" +
-		       $"A.active - {a.enabled}\n" +
-		       $"B.active - {b.enabled}\n" +
-		       $"A.useRealTime - {a.useRealTime}\n" +
-		       $"B.useRealTime - {b.useRealTime}";
+					 $"B.name - {b.name}\n" +
+					 $"A.interval - {a.interval}\n" +
+					 $"B.interval - {b.interval}\n" +
+					 $"A.active - {a.enabled}\n" +
+					 $"B.active - {b.enabled}\n" +
+					 $"A.useRealTime - {a.useRealTime}\n" +
+					 $"B.useRealTime - {b.useRealTime}";
 	}
 
 	/// <summary>

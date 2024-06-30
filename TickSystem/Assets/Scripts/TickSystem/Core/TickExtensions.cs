@@ -1,5 +1,9 @@
 namespace TickSystem.Core
 {
+	/// <summary>
+	/// Extension methods for <see cref="TickGroup"/> for
+	/// easier access to <see cref="GroupParams"/> properties.
+	/// </summary>
 	public static class TickExtensions
 	{
 		/// <summary>

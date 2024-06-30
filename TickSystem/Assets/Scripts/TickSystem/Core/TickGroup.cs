@@ -18,7 +18,7 @@ namespace TickSystem.Core
 		/// <summary>
 		/// The number of callbacks in the group.
 		/// </summary>
-		public int CallbackCount => _callbacks.Count;
+		public int Count => _callbacks.Count;
 
 		/// <summary>
 		/// The parameters for the TickGroup.
@@ -29,36 +29,30 @@ namespace TickSystem.Core
 
 		#region Constructors
 
-		public TickGroup(string name, float interval)
+		public TickGroup(string name, float interval, bool? active = null, bool? useRealTime = null)
 		{
-			Parameters = new GroupParams(name, interval, true, false);
+			Parameters = new GroupParams(name, interval, active ?? true, useRealTime ?? false);
 			TickManager_New.Add(this);
 		}
 
-		public TickGroup(string name, float interval, bool active, bool useRealTime)
+		public TickGroup(GroupParams parameters)
 		{
-			Parameters = new GroupParams(name, interval, active, useRealTime);
+			Parameters = parameters;
+			_callbacks = new List<Action>();
 			TickManager_New.Add(this);
 		}
 
 		public TickGroup(GroupParams parameters, IEnumerable<Action> callbacks)
 		{
-			this.Parameters = parameters;
+			Parameters = parameters;
 			_callbacks = callbacks.ToList();
 			TickManager_New.Add(this);
 		}
 
 		public TickGroup(GroupParams parameters, params Action[] callbacks)
 		{
-			this.Parameters = parameters;
+			Parameters = parameters;
 			_callbacks = callbacks.ToList();
-			TickManager_New.Add(this);
-		}
-
-		public TickGroup(GroupParams parameters)
-		{
-			this.Parameters = parameters;
-			_callbacks = new List<Action>();
 			TickManager_New.Add(this);
 		}
 

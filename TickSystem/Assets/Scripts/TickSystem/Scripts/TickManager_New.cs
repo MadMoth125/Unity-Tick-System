@@ -174,7 +174,7 @@ namespace TickSystem
 				// Filtering groups that won't be ticking
 				if (GroupsAndTimers[i] == null) continue;
 				if (!GroupsAndTimers[i].Key.Active()) continue;
-				if (GroupsAndTimers[i].Key.CallbackCount == 0) continue;
+				if (GroupsAndTimers[i].Key.Count == 0) continue;
 				if (GroupsAndTimers[i].Key.Interval() <= 0) continue;
 
 				if (GroupsAndTimers[i].Key.UseRealTime())

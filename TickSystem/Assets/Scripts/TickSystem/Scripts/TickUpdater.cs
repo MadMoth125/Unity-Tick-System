@@ -83,7 +83,7 @@ namespace TickSystem
 				if (!_groupsAndTimers[i].Key.Active()) continue;
 
 				// Skip tick groups with no callbacks
-				if (_groupsAndTimers[i].Key.CallbackCount == 0) continue;
+				if (_groupsAndTimers[i].Key.Count == 0) continue;
 
 				// Skip tick groups with a tick rate of 0
 				if (_groupsAndTimers[i].Key.Interval() <= 0) continue;

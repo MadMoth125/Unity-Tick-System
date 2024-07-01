@@ -7,6 +7,10 @@ using UnityEngine;
 
 namespace TickSystem
 {
+	/// <summary>
+	/// This class should not be manually instantiated,
+	/// as it auto-instantiates an instance when the game starts.
+	/// </summary>
 	[DisallowMultipleComponent]
 	public class TickManager : MonoBehaviour
 	{

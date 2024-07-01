@@ -27,7 +27,7 @@ namespace TickSystem
 		/// Copies values from another MutableKeyValuePair instance.
 		/// </summary>
 		/// <param name="other">The MutableKeyValuePair to copy values from.</param>
-		public void CopyFrom(MutableKeyValuePair<TKey, TValue> other)
+		public void Copy(MutableKeyValuePair<TKey, TValue> other)
 		{
 			Key = other.Key;
 			Value = other.Value;
@@ -37,7 +37,7 @@ namespace TickSystem
 		/// Copies values from a KeyValuePair instance.
 		/// </summary>
 		/// <param name="pair">The KeyValuePair to copy values from.</param>
-		public void CopyFrom(KeyValuePair<TKey, TValue> pair)
+		public void Copy(KeyValuePair<TKey, TValue> pair)
 		{
 			Key = pair.Key;
 			Value = pair.Value;

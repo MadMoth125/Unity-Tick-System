@@ -12,7 +12,7 @@ namespace TickSystem
 		#region Properties
 
 		/// <summary>
-		/// Whether the tick group is active.
+		/// Whether the TickGroup is active.
 		/// </summary>
 		public bool Active
 		{
@@ -21,22 +21,22 @@ namespace TickSystem
 			{
 				if (active == value) return;
 				active = value;
-				GetTickGroup().SetEnabled(value);
+				GetTickGroup().Enabled = value;
 			}
 		}
 
 		/// <summary>
-		/// Whether the tick group uses real time.
+		/// Whether the TickGroup uses real time.
 		/// If false, it uses game time.
 		/// </summary>
-		public bool UseRealTime
+		public bool IsRealTime
 		{
-			get => useRealTime;
+			get => isRealTime;
 			set
 			{
-				if (useRealTime == value) return;
-				useRealTime = value;
-				GetTickGroup().SetRealTime(value);
+				if (isRealTime == value) return;
+				isRealTime = value;
+				GetTickGroup().IsRealTime = value;
 			}
 		}
 
@@ -50,12 +50,12 @@ namespace TickSystem
 			{
 				if (tickRate == value) return;
 				tickRate = value;
-				GetTickGroup().SetInterval(1f / value);
+				GetTickGroup().Interval = 1f / value;
 			}
 		}
 
 		/// <summary>
-		/// The interval between ticks. (read-only)
+		/// The interval between ticks.
 		/// </summary>
 		public float Interval => 1f / tickRate;
 
@@ -65,10 +65,10 @@ namespace TickSystem
 		[SerializeField]
 		private bool active = true;
 
-		[Tooltip("Whether the tick group uses real time.\n" +
+		[Tooltip("Whether the tick group functions in real time.\n" +
 		         "If false, it uses game time.")]
 		[SerializeField]
-		private bool useRealTime = false;
+		private bool isRealTime = false;
 
 		[Tooltip("The number of ticks per second.")]
 		[Range(1, 60)]
@@ -76,6 +76,7 @@ namespace TickSystem
 		private int tickRate = 20;
 
 		private TickGroup _tickGroup;
+		private GroupParams _groupParams;
 
 		/// <summary>
 		/// Adds a callback to the group.
@@ -92,7 +93,11 @@ namespace TickSystem
 		/// <summary>
 		/// Returns the parameters for the group asset.
 		/// </summary>
-		public GroupParams GetGroupParams() => new(name, 1f / tickRate, active, useRealTime);
+		public GroupParams GetGroupParams()
+		{
+			_groupParams.Set(name, Interval, Active, IsRealTime);
+			return _groupParams;
+		}
 
 		/// <summary>
 		/// Returns the tick group associated with this asset.

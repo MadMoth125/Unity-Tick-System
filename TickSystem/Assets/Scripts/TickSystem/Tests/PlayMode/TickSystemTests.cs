@@ -43,7 +43,7 @@ internal class TickSystemTests
 			TickGroup tickGroup = new TickGroup(paramsA);
 
 			// Act
-			GroupParams paramsB = tickGroup.Parameters;
+			GroupParams paramsB = tickGroup.GetParameters();
 			bool hasParams = paramsA == paramsB;
 			tickGroup.Dispose();
 
@@ -58,7 +58,7 @@ internal class TickSystemTests
 			// Arrange
 			TickGroup tickGroup = new TickGroup();
 			GroupParams paramsA = GroupParams.Default;
-			GroupParams paramsB = tickGroup.Parameters;
+			GroupParams paramsB = tickGroup.GetParameters();
 
 			// Act
 			bool hasParams = paramsA == paramsB;
@@ -80,7 +80,7 @@ internal class TickSystemTests
 			group.Add(TestListenerMethod);
 
 			// Act
-			yield return new WaitForSeconds(GetForgivingInterval(group.Parameters));
+			yield return new WaitForSeconds(GetForgivingInterval(group.GetParameters()));
 			group.Dispose();
 			TickManager.Enabled = prevManagerState;
 
@@ -104,7 +104,7 @@ internal class TickSystemTests
 			group.Add(TestListenerMethod);
 
 			// Act
-			yield return new WaitForSeconds(GetForgivingInterval(group.Parameters));
+			yield return new WaitForSeconds(GetForgivingInterval(group.GetParameters()));
 			group.Dispose();
 			TickManager.Enabled = prevManagerState;
 
@@ -158,8 +158,8 @@ internal class TickSystemTests
 					 $"B.interval - {b.interval}\n" +
 					 $"A.active - {a.enabled}\n" +
 					 $"B.active - {b.enabled}\n" +
-					 $"A.useRealTime - {a.useRealTime}\n" +
-					 $"B.useRealTime - {b.useRealTime}";
+					 $"A.useRealTime - {a.realTime}\n" +
+					 $"B.useRealTime - {b.realTime}";
 	}
 
 	/// <summary>

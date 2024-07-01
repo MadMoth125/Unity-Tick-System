@@ -20,59 +20,62 @@ namespace TickSystem
 		/// </summary>
 		public int Count => _callbacks.Count;
 
-		/// <summary>
-		/// The parameters for the TickGroup.
-		/// </summary>
-		public GroupParams Parameters;
+		public string Name;
+		public float Interval;
+		public bool Enabled;
+		public bool IsRealTime;
 
 		private readonly List<Action> _callbacks;
 
 		#region Constructors
 
-		public TickGroup(string name, float interval, bool? active = null, bool? useRealTime = null)
+		public TickGroup(string name, float interval, bool? enabled = null, bool? realTime = null)
 		{
-			Parameters = new GroupParams(name, interval, active ?? true, useRealTime ?? false);
+			Name = name;
+			Interval = interval;
+			Enabled = enabled ?? true;
+			IsRealTime = realTime ?? false;
 			TickManager.Add(this);
 		}
 
 		public TickGroup(GroupParams parameters)
 		{
-			Parameters = parameters;
+			parameters.Deconstruct(out Name, out Interval, out Enabled, out IsRealTime);
 			_callbacks = new List<Action>();
 			TickManager.Add(this);
 		}
 
 		public TickGroup(GroupParams parameters, IEnumerable<Action> callbacks)
 		{
-			Parameters = parameters;
+			parameters.Deconstruct(out Name, out Interval, out Enabled, out IsRealTime);
 			_callbacks = callbacks.ToList();
 			TickManager.Add(this);
 		}
 
 		public TickGroup(GroupParams parameters, params Action[] callbacks)
 		{
-			Parameters = parameters;
+			parameters.Deconstruct(out Name, out Interval, out Enabled, out IsRealTime);
 			_callbacks = callbacks.ToList();
 			TickManager.Add(this);
 		}
 
 		public TickGroup(IEnumerable<Action> callbacks)
 		{
-			Parameters = GroupParams.Default;
+			GroupParams.Default.Deconstruct(out Name, out Interval, out Enabled, out IsRealTime);
 			_callbacks = callbacks.ToList();
 			TickManager.Add(this);
 		}
 
 		public TickGroup(params Action[] callbacks)
 		{
-			Parameters = GroupParams.Default;
+			GroupParams.Default.Deconstruct(out Name, out Interval, out Enabled, out IsRealTime);
 			_callbacks = callbacks.ToList();
 			TickManager.Add(this);
 		}
 
 		public TickGroup()
 		{
-			Parameters = GroupParams.Default;
+			GroupParams.Default.Deconstruct(out Name, out Interval, out Enabled, out IsRealTime);
 			_callbacks = new List<Action>();
 			TickManager.Add(this);
 		}
@@ -91,7 +94,7 @@ namespace TickSystem
 		public static bool CompareName(TickGroup group, in string name)
 		{
 			return group != null &&
-			       group.Parameters.name.Trim().Replace(" ", "") == name.Trim().Replace(" ", "");
+			       group.Name.Trim().Replace(" ", "") == name.Trim().Replace(" ", "");
 		}
 
 		/// <summary>
@@ -127,7 +130,7 @@ namespace TickSystem
 		/// </summary>
 		public void Invoke()
 		{
-			if (!Parameters.enabled) return;
+			if (!Enabled) return;
 
 			// Using a for-loop to avoid garbage allocation
 			for (int i = _callbacks.Count - 1; i >= 0; i--)

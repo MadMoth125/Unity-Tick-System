@@ -1,3 +1,5 @@
+#define REVERSE_CLEAR
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +20,9 @@ namespace TickSystem
 		/// </summary>
 		public static event Action<TickGroup> OnTickGroupRemoved = delegate {  };
 
+		// Singleton instance
+		private static TickManager _instance;
+
 		/// <summary>
 		/// The enabled state of the TickManager.
 		/// </summary>
@@ -30,19 +35,17 @@ namespace TickSystem
 			set => _instance.enabled = value;
 		}
 
-		// private singleton instance
-		private static TickManager _instance;
-
-		// private static TickGroup reference collection
 		private static readonly List<MutableKeyValuePair<TickGroup, float>> GroupsAndTimers = new();
+
+		private static readonly Queue<TickGroup> AddedTickGroups = new();
 
 		// Initializes an instance of the TickManager.
 		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
 		private static void Init()
 		{
 			if (_instance != null) return;
-			var tempInst = new GameObject("TickManager").AddComponent<TickManager>();
-			DontDestroyOnLoad(tempInst.gameObject);
+			var inst = new GameObject("TickManager").AddComponent<TickManager>();
+			DontDestroyOnLoad(inst.gameObject);
 		}
 
 		/// <summary>
@@ -51,22 +54,33 @@ namespace TickSystem
 		/// <param name="tickGroup"></param>
 		public static void Add(TickGroup tickGroup)
 		{
-			if (_instance == null) return;
-
 			if (tickGroup == null)
 			{
-				Debug.LogWarning($"Failed to add '{nameof(TickGroup)}': {nameof(NullReferenceException)}", _instance);
+				Debug.LogWarning($"Failed to add '{nameof(TickGroup)}': " +
+				                 $"{nameof(NullReferenceException)}", _instance);
 				return;
 			}
 
 			if (Contains(tickGroup))
 			{
-				Debug.LogWarning($"Failed to add '{nameof(TickGroup)}.{tickGroup.GetName()}': Instance already exists.", _instance);
+				Debug.LogWarning($"Failed to add '{nameof(TickGroup)}.{tickGroup.GetName()}': " +
+				                 $"Instance already exists in {nameof(TickManager)}.", _instance);
 				return;
 			}
 
-			GroupsAndTimers.Add(new(tickGroup, 0f));
-			OnTickGroupAdded.Invoke(tickGroup);
+			GroupsAndTimers.Add(new MutableKeyValuePair<TickGroup, float>(tickGroup, 0f));
+
+			// If the singleton instance is not initialized when adding TickGroups,
+			// other scripts likely can't respond to the event. Queue TickGroups for
+			// later if the instance is null, else invoke the event immediately.
+			if (_instance != null)
+			{
+				OnTickGroupAdded.Invoke(tickGroup);
+			}
+			else
+			{
+				AddedTickGroups.Enqueue(tickGroup);
+			}
 		}
 
 		/// <summary>
@@ -75,17 +89,17 @@ namespace TickSystem
 		/// <param name="tickGroup"></param>
 		public static void Remove(TickGroup tickGroup)
 		{
-			if (_instance == null) return;
-
 			if (tickGroup == null)
 			{
-				Debug.LogWarning($"Failed to remove '{nameof(TickGroup)}': {nameof(NullReferenceException)}", _instance);
+				Debug.LogWarning($"Failed to remove '{nameof(TickGroup)}': " +
+				                 $"{nameof(NullReferenceException)}", _instance);
 				return;
 			}
 
 			if (!Contains(tickGroup))
 			{
-				Debug.LogWarning($"Failed to remove '{nameof(TickGroup)}.{tickGroup.GetName()}': Instance doesn't exists.", _instance);
+				Debug.LogWarning($"Failed to remove '{nameof(TickGroup)}.{tickGroup.GetName()}': " +
+				                 $"Instance doesn't exist in {nameof(TickManager)}.", _instance);
 				return;
 			}
 
@@ -150,31 +164,41 @@ namespace TickSystem
 		{
 			if (_instance != null)
 			{
-				Debug.Log($"Multiple instances of '{nameof(TickManager)}' detected. Destroying...");
-				Destroy(this); // Remove the script from the Object
+				Debug.Log($"Multiple instances of '{nameof(TickManager)}' detected. Destroying duplicate.");
+				Destroy(this);
 				return;
 			}
 
 			_instance = this;
 		}
 
+		private void Start()
+		{
+			// If we have any queued events, invoke them on Start
+			// so other scripts can receive the added instances.
+			foreach (var tickGroup in AddedTickGroups)
+			{
+				OnTickGroupAdded.Invoke(tickGroup);
+			}
+
+			AddedTickGroups.Clear();
+		}
+
 		private void Update()
 		{
-			// Redundant check, but just making sure
-			// it doesn't update groups when disabled.
-			if (!enabled) return;
-
 			// Early return if we have no TickGroups
 			if (GroupsAndTimers.Count == 0) return;
 
 			// Using a for-loop to avoid the garbage allocation of a foreach-loop
 			for (int i = 0; i < GroupsAndTimers.Count; i++)
 			{
-				// Filtering groups that won't be ticking
-				if (GroupsAndTimers[i] == null) continue;
-				if (!GroupsAndTimers[i].Key.IsEnabled()) continue;
-				if (GroupsAndTimers[i].Key.Count == 0) continue;
-				if (GroupsAndTimers[i].Key.GetInterval() <= 0) continue;
+				// Skipping groups that are null, disabled,
+				// have 0 callbacks, or have invalid intervals.
+				if (GroupsAndTimers[i] == null ||
+				    GroupsAndTimers[i].Key == null ||
+				    GroupsAndTimers[i].Key.IsEnabled() == false ||
+				    GroupsAndTimers[i].Key.Count == 0 ||
+				    GroupsAndTimers[i].Key.GetInterval() <= 0) continue;
 
 				if (GroupsAndTimers[i].Key.IsRealTime())
 				{
@@ -198,6 +222,21 @@ namespace TickSystem
 
 				GroupsAndTimers[i].Value = 0f;
 				GroupsAndTimers[i].Key.Invoke();
+			}
+		}
+
+		private void OnDestroy()
+		{
+			// Call events upon instance being destroyed
+			while (GroupsAndTimers.Count > 0)
+			{
+				#if !REVERSE_CLEAR
+				// Remove TickGroups last-to-first
+				Remove(GroupsAndTimers[^1].Key);
+				#else
+				// Remove TickGroups first-to-last
+				Remove(GroupsAndTimers[0].Key);
+				#endif
 			}
 		}
 

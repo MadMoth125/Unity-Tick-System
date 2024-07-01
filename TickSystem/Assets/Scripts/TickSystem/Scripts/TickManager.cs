@@ -257,7 +257,7 @@ namespace TickSystem
 		private static bool EnableLogging()
 		{
 			#if UNITY_EDITOR
-			return true;
+			return false;
 			#else
 			return false
 			#endif

@@ -60,15 +60,15 @@ namespace TickSystem
 		{
 			if (tickGroup == null)
 			{
-				Debug.LogWarning($"Failed to add '{nameof(TickGroup)}': " +
-				                 $"{nameof(NullReferenceException)}", _instance);
+				if (EnableLogging()) Debug.LogWarning($"Failed to add '{nameof(TickGroup)}': " +
+				                                      $"{nameof(NullReferenceException)}", _instance);
 				return;
 			}
 
 			if (Contains(tickGroup))
 			{
-				Debug.LogWarning($"Failed to add '{nameof(TickGroup)}.{tickGroup.Name}': " +
-				                 $"Instance already exists in {nameof(TickManager)}.", _instance);
+				if (EnableLogging()) Debug.LogWarning($"Failed to add '{nameof(TickGroup)}.{tickGroup.Name}': " +
+				                                      $"Instance already exists in {nameof(TickManager)}.", _instance);
 				return;
 			}
 
@@ -95,15 +95,15 @@ namespace TickSystem
 		{
 			if (tickGroup == null)
 			{
-				Debug.LogWarning($"Failed to remove '{nameof(TickGroup)}': " +
-				                 $"{nameof(NullReferenceException)}", _instance);
+				if (EnableLogging()) Debug.LogWarning($"Failed to remove '{nameof(TickGroup)}': " +
+				                                      $"{nameof(NullReferenceException)}", _instance);
 				return;
 			}
 
 			if (!Contains(tickGroup))
 			{
-				Debug.LogWarning($"Failed to remove '{nameof(TickGroup)}.{tickGroup.Name}': " +
-				                 $"Instance doesn't exist in {nameof(TickManager)}.", _instance);
+				if (EnableLogging()) Debug.LogWarning($"Failed to remove '{nameof(TickGroup)}.{tickGroup.Name}': " +
+				                                       $"Instance doesn't exist in {nameof(TickManager)}.", _instance);
 				return;
 			}
 
@@ -168,7 +168,7 @@ namespace TickSystem
 		{
 			if (_instance != null)
 			{
-				Debug.Log($"Multiple instances of '{nameof(TickManager)}' detected. Destroying duplicate.");
+				if (EnableLogging()) Debug.Log($"Multiple instances of '{nameof(TickManager)}' detected. Destroying duplicate.");
 				Destroy(this);
 				return;
 			}
@@ -251,6 +251,16 @@ namespace TickSystem
 		{
 			var groups = GroupsAndTimers.Select(x => x.Key).ToList();
 			return groups.IndexOf(tickGroup);
+		}
+
+		// Controls whether Debug.Log() methods are called in class methods.
+		private static bool EnableLogging()
+		{
+			#if UNITY_EDITOR
+			return true;
+			#else
+			return false
+			#endif
 		}
 	}
 }

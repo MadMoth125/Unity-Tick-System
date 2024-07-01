@@ -17,7 +17,7 @@ namespace TickSystem
 		/// <param name="tickGroup"></param>
 		public static GroupParams GetParameters(this TickGroupAsset tickGroup)
 		{
-			return new GroupParams(tickGroup.name, tickGroup.Interval, tickGroup.Active, tickGroup.IsRealTime);
+			return new GroupParams(tickGroup.name, tickGroup.Interval, tickGroup.Enabled, tickGroup.IsRealTime);
 		}
 
 		/// <summary>

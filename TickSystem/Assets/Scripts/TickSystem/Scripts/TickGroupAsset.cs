@@ -14,13 +14,13 @@ namespace TickSystem
 		/// <summary>
 		/// Whether the TickGroup is active.
 		/// </summary>
-		public bool Active
+		public bool Enabled
 		{
-			get => active;
+			get => enabled;
 			set
 			{
-				if (active == value) return;
-				active = value;
+				if (enabled == value) return;
+				enabled = value;
 				GetTickGroup().Enabled = value;
 			}
 		}
@@ -63,7 +63,7 @@ namespace TickSystem
 
 		[Tooltip("Whether the tick group is active.")]
 		[SerializeField]
-		private bool active = true;
+		private bool enabled = true;
 
 		[Tooltip("Whether the tick group functions in real time.\n" +
 		         "If false, it uses game time.")]
@@ -95,7 +95,7 @@ namespace TickSystem
 		/// </summary>
 		public GroupParams GetGroupParams()
 		{
-			_groupParams.Set(name, Interval, Active, IsRealTime);
+			_groupParams.Set(name, Interval, Enabled, IsRealTime);
 			return _groupParams;
 		}
 

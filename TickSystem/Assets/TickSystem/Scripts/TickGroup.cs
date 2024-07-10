@@ -13,17 +13,33 @@ namespace TickSystem
 		/// <summary>
 		/// The actions to be invoked when the group ticks.
 		/// </summary>
-		public IReadOnlyList<Action> Callbacks => _callbacks;
+		internal IReadOnlyList<Action> Callbacks => _callbacks;
 
 		/// <summary>
 		/// The number of callbacks in the group.
 		/// </summary>
 		public int Count => _callbacks.Count;
 
+		/// <summary>
+		/// The name of the TickGroup.
+		/// </summary>
 		public string Name;
+
+		/// <summary>
+		/// The interval between each TickGroup tick.
+		/// </summary>
 		public float Interval;
+
+		/// <summary>
+		/// Whether the TickGroup is enabled.
+		/// </summary>
 		public bool Enabled;
-		public bool IsRealTime;
+
+		/// <summary>
+		/// Whether the TickGroup uses real time.
+		/// If false, it uses game time.
+		/// </summary>
+		public bool RealTime;
 
 		private readonly List<Action> _callbacks;
 
@@ -34,48 +50,48 @@ namespace TickSystem
 			Name = name;
 			Interval = interval;
 			Enabled = enabled ?? true;
-			IsRealTime = realTime ?? false;
+			RealTime = realTime ?? false;
 			TickManager.Add(this);
 		}
 
 		public TickGroup(GroupParams parameters)
 		{
-			parameters.Deconstruct(out Name, out Interval, out Enabled, out IsRealTime);
+			parameters.Deconstruct(out Name, out Interval, out Enabled, out RealTime);
 			_callbacks = new List<Action>();
 			TickManager.Add(this);
 		}
 
 		public TickGroup(GroupParams parameters, IEnumerable<Action> callbacks)
 		{
-			parameters.Deconstruct(out Name, out Interval, out Enabled, out IsRealTime);
+			parameters.Deconstruct(out Name, out Interval, out Enabled, out RealTime);
 			_callbacks = callbacks.ToList();
 			TickManager.Add(this);
 		}
 
 		public TickGroup(GroupParams parameters, params Action[] callbacks)
 		{
-			parameters.Deconstruct(out Name, out Interval, out Enabled, out IsRealTime);
+			parameters.Deconstruct(out Name, out Interval, out Enabled, out RealTime);
 			_callbacks = callbacks.ToList();
 			TickManager.Add(this);
 		}
 
 		public TickGroup(IEnumerable<Action> callbacks)
 		{
-			GroupParams.Default.Deconstruct(out Name, out Interval, out Enabled, out IsRealTime);
+			GroupParams.Default.Deconstruct(out Name, out Interval, out Enabled, out RealTime);
 			_callbacks = callbacks.ToList();
 			TickManager.Add(this);
 		}
 
 		public TickGroup(params Action[] callbacks)
 		{
-			GroupParams.Default.Deconstruct(out Name, out Interval, out Enabled, out IsRealTime);
+			GroupParams.Default.Deconstruct(out Name, out Interval, out Enabled, out RealTime);
 			_callbacks = callbacks.ToList();
 			TickManager.Add(this);
 		}
 
 		public TickGroup()
 		{
-			GroupParams.Default.Deconstruct(out Name, out Interval, out Enabled, out IsRealTime);
+			GroupParams.Default.Deconstruct(out Name, out Interval, out Enabled, out RealTime);
 			_callbacks = new List<Action>();
 			TickManager.Add(this);
 		}
@@ -83,24 +99,9 @@ namespace TickSystem
 		#endregion
 
 		/// <summary>
-		/// Checks if the TickGroup name matches the provided name.
+		/// Add a callback to the TickGroup.
 		/// </summary>
-		/// <param name="group"></param>
-		/// <param name="name"></param>
-		/// <returns>Whether the names are equal.</returns>
-		/// <remarks>
-		/// Strings are compared with all whitespace being removed.
-		/// </remarks>
-		public static bool CompareName(TickGroup group, in string name)
-		{
-			return group != null &&
-			       group.Name.Trim().Replace(" ", "") == name.Trim().Replace(" ", "");
-		}
-
-		/// <summary>
-		/// Adds a callback to the group.
-		/// </summary>
-		/// <param name="callback">The callback to add.</param>
+		/// <param name="callback"></param>
 		public void Add(Action callback)
 		{
 			if (callback == null) return;
@@ -108,9 +109,9 @@ namespace TickSystem
 		}
 
 		/// <summary>
-		/// Removes a callback from the group.
+		/// Remove a callback from the TickGroup.
 		/// </summary>
-		/// <param name="callback">The callback to remove.</param>
+		/// <param name="callback"></param>
 		public void Remove(Action callback)
 		{
 			if (callback == null) return;
@@ -118,7 +119,7 @@ namespace TickSystem
 		}
 
 		/// <summary>
-		/// Clears all callbacks from the group.
+		/// Clear all callbacks from the TickGroup.
 		/// </summary>
 		public void Clear()
 		{
@@ -126,26 +127,41 @@ namespace TickSystem
 		}
 
 		/// <summary>
-		/// Invokes all callbacks in the group.
-		/// </summary>
-		public void Invoke()
-		{
-			if (!Enabled) return;
-
-			// Using a for-loop to avoid garbage allocation
-			for (int i = _callbacks.Count - 1; i >= 0; i--)
-			{
-				_callbacks?[i]?.Invoke();
-			}
-		}
-
-		/// <summary>
-		/// Clears all callbacks and unregisters the group, preventing further updates to it.
+		/// Clear all callbacks and remove the TickGroup from the TickManager, preventing further updates to it.
 		/// </summary>
 		public void Dispose()
 		{
 			TickManager.Remove(this);
 			Clear();
+		}
+
+		/// <summary>
+		/// Checks if the TickGroup name matches the provided name.
+		/// </summary>
+		/// <param name="group"></param>
+		/// <param name="name"></param>
+		/// <returns>Whether the names are equal.</returns>
+		public static bool CompareName(TickGroup group, in string name)
+		{
+			return group != null &&
+			       group.Name.Trim().Replace(" ", "") == name.Trim().Replace(" ", "");
+		}
+
+		/// <summary>
+		/// Invoke all callbacks in the TickGroup.
+		/// </summary>
+		/// <remarks>
+		/// Accessor is 'internal' as to prevent scripts that are not
+		/// included in the assembly from invoking the registered callbacks.
+		/// </remarks>
+		internal void Invoke()
+		{
+			if (!Enabled) return;
+
+			for (int i = _callbacks.Count - 1; i >= 0; i--)
+			{
+				_callbacks?[i]?.Invoke();
+			}
 		}
 	}
 }

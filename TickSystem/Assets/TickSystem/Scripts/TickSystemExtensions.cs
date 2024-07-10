@@ -8,7 +8,7 @@ namespace TickSystem
 		/// <param name="tickGroup"></param>
 		public static GroupParams GetParameters(this TickGroup tickGroup)
 		{
-			return new GroupParams(tickGroup.Name, tickGroup.Interval, tickGroup.Enabled, tickGroup.IsRealTime);
+			return new GroupParams(tickGroup.Name, tickGroup.Interval, tickGroup.Enabled, tickGroup.RealTime);
 		}
 
 		/// <summary>
@@ -17,7 +17,7 @@ namespace TickSystem
 		/// <param name="tickGroup"></param>
 		public static GroupParams GetParameters(this TickGroupAsset tickGroup)
 		{
-			return new GroupParams(tickGroup.name, tickGroup.Interval, tickGroup.Enabled, tickGroup.IsRealTime);
+			return new GroupParams(tickGroup.name, tickGroup.Interval, tickGroup.Enabled, tickGroup.RealTime);
 		}
 
 		/// <summary>
@@ -27,7 +27,7 @@ namespace TickSystem
 		/// <param name="parameters"></param>
 		public static void SetParameters(this TickGroup tickGroup, in GroupParams parameters)
 		{
-			parameters.Deconstruct(out tickGroup.Name, out tickGroup.Interval, out tickGroup.Enabled, out tickGroup.IsRealTime);
+			parameters.Deconstruct(out tickGroup.Name, out tickGroup.Interval, out tickGroup.Enabled, out tickGroup.RealTime);
 		}
 	}
 }

@@ -15,7 +15,7 @@ namespace TickSystem
 	public class TickManager : MonoBehaviour
 	{
 		/// <summary>
-		/// Invoked when a unique TickGroup has been added to the manager
+		/// Invoked when a TickGroup has been added to the manager
 		/// </summary>
 		public static event Action<TickGroup> OnTickGroupAdded = delegate {  };
 
@@ -53,22 +53,26 @@ namespace TickSystem
 		}
 
 		/// <summary>
-		/// Adds a TickGroup to the manager.
+		/// Add a TickGroup to the manager.
 		/// </summary>
 		/// <param name="tickGroup"></param>
 		public static void Add(TickGroup tickGroup)
 		{
 			if (tickGroup == null)
 			{
-				if (EnableLogging()) Debug.LogWarning($"Failed to add '{nameof(TickGroup)}': " +
-				                                      $"{nameof(NullReferenceException)}", _instance);
+				if (EnableLogging())
+				{
+					Debug.LogWarning($"Failed to add '{nameof(TickGroup)}': {nameof(NullReferenceException)}", _instance);
+				}
 				return;
 			}
 
 			if (Contains(tickGroup))
 			{
-				if (EnableLogging()) Debug.LogWarning($"Failed to add '{nameof(TickGroup)}.{tickGroup.Name}': " +
-				                                      $"Instance already exists in {nameof(TickManager)}.", _instance);
+				if (EnableLogging())
+				{
+					Debug.LogWarning($"Failed to add '{nameof(TickGroup)}.{tickGroup.Name}': Instance already exists in {nameof(TickManager)}.", _instance);
+				}
 				return;
 			}
 
@@ -88,22 +92,26 @@ namespace TickSystem
 		}
 
 		/// <summary>
-		/// Removes a TickGroup from the manager.
+		/// Remove a TickGroup from the manager.
 		/// </summary>
 		/// <param name="tickGroup"></param>
 		public static void Remove(TickGroup tickGroup)
 		{
 			if (tickGroup == null)
 			{
-				if (EnableLogging()) Debug.LogWarning($"Failed to remove '{nameof(TickGroup)}': " +
-				                                      $"{nameof(NullReferenceException)}", _instance);
+				if (EnableLogging())
+				{
+					Debug.LogWarning($"Failed to remove '{nameof(TickGroup)}': {nameof(NullReferenceException)}", _instance);
+				}
 				return;
 			}
 
 			if (!Contains(tickGroup))
 			{
-				if (EnableLogging()) Debug.LogWarning($"Failed to remove '{nameof(TickGroup)}.{tickGroup.Name}': " +
-				                                       $"Instance doesn't exist in {nameof(TickManager)}.", _instance);
+				if (EnableLogging())
+				{
+					Debug.LogWarning($"Failed to remove '{nameof(TickGroup)}.{tickGroup.Name}': Instance doesn't exist in {nameof(TickManager)}.", _instance);
+				}
 				return;
 			}
 
@@ -112,7 +120,7 @@ namespace TickSystem
 		}
 
 		/// <summary>
-		/// Finds the first TickGroup with a matching name.
+		/// Find the first TickGroup with a matching name.
 		/// </summary>
 		/// <param name="name"></param>
 		/// <remarks>
@@ -125,7 +133,7 @@ namespace TickSystem
 		}
 
 		/// <summary>
-		/// Finds the first TickGroup with a matching name.
+		/// Find the first TickGroup with a matching name.
 		/// </summary>
 		/// <param name="name"></param>
 		/// <param name="tickGroup"></param>
@@ -140,7 +148,7 @@ namespace TickSystem
 		}
 
 		/// <summary>
-		/// Checks if a TickGroup with a matching name is already referenced by the manager.
+		/// Check if a TickGroup with a matching name is already referenced by the manager.
 		/// </summary>
 		/// <param name="name"></param>
 		/// <returns>Whether a matching TickGroup was found.</returns>
@@ -153,7 +161,7 @@ namespace TickSystem
 		}
 
 		/// <summary>
-		/// Checks if the TickGroup is already referenced by the manager.
+		/// Check if the TickGroup is already referenced by the manager.
 		/// </summary>
 		/// <param name="tickGroup"></param>
 		/// <returns>Whether a matching TickGroup was found.</returns>
@@ -168,7 +176,10 @@ namespace TickSystem
 		{
 			if (_instance != null)
 			{
-				if (EnableLogging()) Debug.Log($"Multiple instances of '{nameof(TickManager)}' detected. Destroying duplicate.");
+				if (EnableLogging())
+				{
+					Debug.Log($"Multiple instances of '{nameof(TickManager)}' detected. Destroying duplicate.");
+				}
 				Destroy(this);
 				return;
 			}
@@ -180,7 +191,7 @@ namespace TickSystem
 		{
 			// If we have any queued events, invoke them on Start
 			// so other scripts can receive the added instances.
-			foreach (var tickGroup in AddedTickGroups)
+			foreach (TickGroup tickGroup in AddedTickGroups)
 			{
 				OnTickGroupAdded.Invoke(tickGroup);
 			}
@@ -204,7 +215,7 @@ namespace TickSystem
 				    GroupsAndTimers[i].Key.Enabled == false ||
 				    GroupsAndTimers[i].Key.Interval <= 0) continue;
 
-				if (GroupsAndTimers[i].Key.IsRealTime)
+				if (GroupsAndTimers[i].Key.RealTime)
 				{
 					float halfDelta = Time.unscaledDeltaTime * 0.5f;
 					if ((GroupsAndTimers[i].Value += halfDelta) <= GroupsAndTimers[i].Key.Interval)
@@ -249,7 +260,7 @@ namespace TickSystem
 		// Finds the index of the MutableKeyValuePair that contains the TickGroup
 		private static int IndexOf(TickGroup tickGroup)
 		{
-			var groups = GroupsAndTimers.Select(x => x.Key).ToList();
+			List<TickGroup> groups = GroupsAndTimers.Select(x => x.Key).ToList();
 			return groups.IndexOf(tickGroup);
 		}
 

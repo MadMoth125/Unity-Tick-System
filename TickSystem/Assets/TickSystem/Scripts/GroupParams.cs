@@ -1,5 +1,4 @@
 using System;
-using UnityEngine.Serialization;
 
 namespace TickSystem
 {
@@ -73,7 +72,7 @@ namespace TickSystem
 
 		#region Overrides
 
-		public override string ToString() => $"[name: {name}, interval: {interval}, enabled: {enabled}, useRealTime: {realTime}]";
+		public override string ToString() => $"[name: {name}, interval: {interval}, enabled: {enabled}, realTime: {realTime}]";
 
 		public override bool Equals(object obj)
 		{

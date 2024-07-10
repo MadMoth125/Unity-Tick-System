@@ -4,15 +4,16 @@ using UnityEngine;
 namespace TickSystem
 {
 	/// <summary>
-	/// Wraps the base TickGroup to integrate the creation/modification of them using the Unity inspector.
+	/// ScriptableObject container to integrate the
+	/// creation/modification of TickGroups using the Unity inspector.
 	/// </summary>
-	[CreateAssetMenu(fileName = "NewTickGroup", menuName = "Tick System/Tick Group")]
+	[CreateAssetMenu(fileName = "NewTickGroup", menuName = "Tick System/TickGroup")]
 	public class TickGroupAsset : ScriptableObject
 	{
 		#region Properties
 
 		/// <summary>
-		/// Whether the TickGroup is active.
+		/// Whether the TickGroup is enabled.
 		/// </summary>
 		public bool Enabled
 		{
@@ -29,14 +30,14 @@ namespace TickSystem
 		/// Whether the TickGroup uses real time.
 		/// If false, it uses game time.
 		/// </summary>
-		public bool IsRealTime
+		public bool RealTime
 		{
-			get => isRealTime;
+			get => realTime;
 			set
 			{
-				if (isRealTime == value) return;
-				isRealTime = value;
-				GetTickGroup().IsRealTime = value;
+				if (realTime == value) return;
+				realTime = value;
+				GetTickGroup().RealTime = value;
 			}
 		}
 
@@ -61,14 +62,14 @@ namespace TickSystem
 
 		#endregion
 
-		[Tooltip("Whether the tick group is active.")]
+		[Tooltip("Whether the tick group is enabled.")]
 		[SerializeField]
 		private bool enabled = true;
 
 		[Tooltip("Whether the tick group functions in real time.\n" +
 		         "If false, it uses game time.")]
 		[SerializeField]
-		private bool isRealTime = false;
+		private bool realTime = false;
 
 		[Tooltip("The number of ticks per second.")]
 		[Range(1, 60)]
@@ -79,28 +80,28 @@ namespace TickSystem
 		private GroupParams _groupParams;
 
 		/// <summary>
-		/// Adds a callback to the group.
+		/// Add a callback to the TickGroup.
 		/// </summary>
-		/// <param name="callback">The callback to add.</param>
+		/// <param name="callback"></param>
 		public void Add(Action callback) => GetTickGroup().Add(callback);
 
 		/// <summary>
-		/// Removes a callback from the group.
+		/// Remove a callback from the TickGroup.
 		/// </summary>
-		/// <param name="callback">The callback to remove.</param>
+		/// <param name="callback"></param>
 		public void Remove(Action callback) => GetTickGroup().Remove(callback);
 
 		/// <summary>
-		/// Returns the parameters for the group asset.
+		/// Returns the GroupParams for the TickGroupAsset.
 		/// </summary>
 		public GroupParams GetGroupParams()
 		{
-			_groupParams.Set(name, Interval, Enabled, IsRealTime);
+			_groupParams.Set(name, Interval, Enabled, RealTime);
 			return _groupParams;
 		}
 
 		/// <summary>
-		/// Returns the tick group associated with this asset.
+		/// Returns the TickGroup for the TickGroupAsset.
 		/// </summary>
 		public TickGroup GetTickGroup() => _tickGroup ??= new TickGroup(GetGroupParams());
 

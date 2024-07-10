@@ -128,7 +128,7 @@ namespace TickSystem
 		/// </remarks>
 		public static TickGroup Find(string name)
 		{
-			var result = GroupsAndTimers.Find(x => TickGroup.CompareName(x.Key, name));
+			MutableKeyValuePair<TickGroup, float> result = GroupsAndTimers.Find(x => TickGroup.CompareName(x.Key, name));
 			return result?.Key;
 		}
 
@@ -201,38 +201,37 @@ namespace TickSystem
 
 		private void Update()
 		{
-			// Early return if we have no TickGroups
 			if (GroupsAndTimers.Count == 0) return;
 
 			// Using a for-loop to avoid the garbage allocation of a foreach-loop
 			for (int i = 0; i < GroupsAndTimers.Count; i++)
 			{
-				// Skipping groups that are null, disabled,
-				// have 0 callbacks, or have invalid intervals.
+				// Skipping groups that are null, disabled, or have 0 callbacks.
 				if (GroupsAndTimers[i] == null ||
 				    GroupsAndTimers[i].Key == null ||
 				    GroupsAndTimers[i].Key.Count == 0 ||
-				    GroupsAndTimers[i].Key.Enabled == false ||
-				    GroupsAndTimers[i].Key.Interval <= 0) continue;
-
-				if (GroupsAndTimers[i].Key.RealTime)
+				    GroupsAndTimers[i].Key.Enabled == false)
 				{
-					float halfDelta = Time.unscaledDeltaTime * 0.5f;
-					if ((GroupsAndTimers[i].Value += halfDelta) <= GroupsAndTimers[i].Key.Interval)
-					{
-						GroupsAndTimers[i].Value += halfDelta;
-						continue;
-					}
+					continue;
 				}
-				else
+
+				// If interval is 0, invoke callbacks every update
+				if (GroupsAndTimers[i].Key.Interval <= 0f)
 				{
-					// using unscaledDeltaTime and timeScale to fix sync issues with deltaTime
-					float halfDelta = (Time.unscaledDeltaTime * Time.timeScale) * 0.5f;
-					if ((GroupsAndTimers[i].Value += halfDelta) <= GroupsAndTimers[i].Key.Interval)
-					{
-						GroupsAndTimers[i].Value += halfDelta;
-						continue;
-					}
+					GroupsAndTimers[i].Key.Invoke();
+					continue;
+				}
+
+				// deltaTime is a bit out-of-sync compared to unscaledDeltaTime,
+				// so we scale it ourselves to avoid visible issues.
+				float delta = GroupsAndTimers[i].Key.RealTime ? Time.unscaledDeltaTime : Time.unscaledDeltaTime * Time.timeScale;
+
+				// Check if we are still below interval
+				if (GroupsAndTimers[i].Value + (delta * 0.5f) <= GroupsAndTimers[i].Key.Interval &&
+				    GroupsAndTimers[i].Value + delta <= GroupsAndTimers[i].Key.Interval)
+				{
+					GroupsAndTimers[i].Value += delta;
+					continue;
 				}
 
 				GroupsAndTimers[i].Value = 0f;
@@ -242,15 +241,14 @@ namespace TickSystem
 
 		private void OnDestroy()
 		{
-			// Call events upon instance being destroyed
 			while (GroupsAndTimers.Count > 0)
 			{
+				// In cases where the order of elements being removed isn't important,
+				// REVERSE_CLEAR can be enabled and may improve performance (hypothetically)
 				#if !REVERSE_CLEAR
-				// Remove TickGroups last-to-first
-				Remove(GroupsAndTimers[^1].Key);
+				Remove(GroupsAndTimers[^1].Key); // Remove TickGroups last-to-first
 				#else
-				// Remove TickGroups first-to-last
-				Remove(GroupsAndTimers[0].Key);
+				Remove(GroupsAndTimers[0].Key); // Remove TickGroups first-to-last
 				#endif
 			}
 		}

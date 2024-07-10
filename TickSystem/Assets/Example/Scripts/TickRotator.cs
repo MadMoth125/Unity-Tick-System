@@ -15,21 +15,14 @@ namespace TickSystem.Example
 
 		private void OnEnable()
 		{
-			// Check if the tick group is assigned.
-			if (tickGroup == null)
-			{
-				Debug.LogError($"'{nameof(TickGroupAsset)}' is not assigned in '{nameof(TickRotator)}'.", this);
-				return;
-			}
-
 			// Add the Rotate method to the tick group.
-			tickGroup.Add(Rotate);
+			tickGroup?.Add(Rotate);
 		}
 
 		private void OnDisable()
 		{
 			// Remove the Rotate method from the tick group.
-			if (tickGroup != null) tickGroup.Remove(Rotate);
+			tickGroup?.Remove(Rotate);
 		}
 
 		#endregion

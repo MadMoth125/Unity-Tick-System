@@ -10,7 +10,27 @@ namespace TickSystem
 	[CreateAssetMenu(fileName = "NewTickGroup", menuName = "Tick System/TickGroup")]
 	public class TickGroupAsset : ScriptableObject
 	{
+		/// <summary>
+		/// Event when TickGroup should invoke callbacks.
+		/// </summary>
+		/// <remarks>
+		/// Wraps <see cref="Add"/> and <see cref="Remove"/> for event syntax.
+		/// </remarks>
+		public event Action OnTick
+		{
+			add => Add(value);
+			remove => Remove(value);
+		}
+
 		#region Properties
+
+		/// <summary>
+		/// The name of the TickGroup.
+		/// </summary>
+		/// <remarks>
+		/// Same as using <see cref="UnityEngine.Object.name"/>.
+		/// </remarks>
+		public string Name => name;
 
 		/// <summary>
 		/// Whether the TickGroup is enabled.
@@ -49,9 +69,10 @@ namespace TickSystem
 			get => tickRate;
 			set
 			{
-				if (tickRate == value) return;
-				tickRate = value;
-				GetTickGroup().Interval = 1f / value;
+				int max = Mathf.Max(0, value);
+				if (tickRate == max) return;
+				tickRate = max;
+				GetTickGroup().Interval = tickRate == 0 ? 0 : 1f / tickRate;
 			}
 		}
 
@@ -72,7 +93,7 @@ namespace TickSystem
 		private bool realTime = false;
 
 		[Tooltip("The number of ticks per second.")]
-		[Range(1, 60)]
+		[Range(0, 60)]
 		[SerializeField]
 		private int tickRate = 20;
 
@@ -80,13 +101,13 @@ namespace TickSystem
 		private GroupParams _groupParams;
 
 		/// <summary>
-		/// Add a callback to the TickGroup.
+		/// Add a callback to the TickGroupAsset.
 		/// </summary>
 		/// <param name="callback"></param>
 		public void Add(Action callback) => GetTickGroup().Add(callback);
 
 		/// <summary>
-		/// Remove a callback from the TickGroup.
+		/// Remove a callback from the TickGroupAsset.
 		/// </summary>
 		/// <param name="callback"></param>
 		public void Remove(Action callback) => GetTickGroup().Remove(callback);
@@ -94,16 +115,16 @@ namespace TickSystem
 		/// <summary>
 		/// Returns the GroupParams for the TickGroupAsset.
 		/// </summary>
-		public GroupParams GetGroupParams()
+		private GroupParams GetGroupParams()
 		{
-			_groupParams.Set(name, Interval, Enabled, RealTime);
+			_groupParams.Set(Name, Interval, Enabled, RealTime);
 			return _groupParams;
 		}
 
 		/// <summary>
 		/// Returns the TickGroup for the TickGroupAsset.
 		/// </summary>
-		public TickGroup GetTickGroup() => _tickGroup ??= new TickGroup(GetGroupParams());
+		private TickGroup GetTickGroup() => _tickGroup ??= new TickGroup(GetGroupParams());
 
 		#region Unity Methods
 

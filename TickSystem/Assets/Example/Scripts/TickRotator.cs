@@ -16,13 +16,13 @@ namespace TickSystem.Example
 		private void OnEnable()
 		{
 			// Add the Rotate method to the tick group.
-			tickGroup?.Add(Rotate);
+			tickGroup.OnTick += Rotate;
 		}
 
 		private void OnDisable()
 		{
 			// Remove the Rotate method from the tick group.
-			tickGroup?.Remove(Rotate);
+			tickGroup.OnTick -= Rotate;
 		}
 
 		#endregion

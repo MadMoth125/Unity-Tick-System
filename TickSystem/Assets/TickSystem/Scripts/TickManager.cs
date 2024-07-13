@@ -24,9 +24,6 @@ namespace TickSystem
 		/// </summary>
 		public static event Action<TickGroup> OnTickGroupRemoved = delegate {  };
 
-		// Singleton instance
-		private static TickManager _instance;
-
 		/// <summary>
 		/// The enabled state of the TickManager.
 		/// </summary>
@@ -39,18 +36,11 @@ namespace TickSystem
 			set => _instance.enabled = value;
 		}
 
+		private static TickManager _instance;
+
 		private static readonly List<MutableKeyValuePair<TickGroup, float>> GroupsAndTimers = new();
 
 		private static readonly Queue<TickGroup> AddedTickGroups = new();
-
-		// Initializes an instance of the TickManager.
-		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-		private static void Init()
-		{
-			if (_instance != null) return;
-			var inst = new GameObject("TickManager").AddComponent<TickManager>();
-			DontDestroyOnLoad(inst.gameObject);
-		}
 
 		/// <summary>
 		/// Add a TickGroup to the manager.
@@ -124,11 +114,11 @@ namespace TickSystem
 		/// </summary>
 		/// <param name="name"></param>
 		/// <remarks>
-		/// See <see cref="TickGroup.CompareName"/> for comparision details.
+		/// See <see cref="TickSystemExtensions.CompareName(TickGroup, string)"/> for comparision details.
 		/// </remarks>
 		public static TickGroup Find(string name)
 		{
-			MutableKeyValuePair<TickGroup, float> result = GroupsAndTimers.Find(x => TickGroup.CompareName(x.Key, name));
+			MutableKeyValuePair<TickGroup, float> result = GroupsAndTimers.Find(x => x.Key.CompareName(name));
 			return result?.Key;
 		}
 
@@ -139,11 +129,11 @@ namespace TickSystem
 		/// <param name="tickGroup"></param>
 		/// <returns>Whether a matching TickGroup was found.</returns>
 		/// <remarks>
-		/// See <see cref="TickGroup.CompareName"/> for comparision details.
+		/// See <see cref="TickSystemExtensions.CompareName(TickGroup, string)"/> for comparision details.
 		/// </remarks>
 		public static bool Find(string name, out TickGroup tickGroup)
 		{
-			tickGroup = GroupsAndTimers.Find(x => TickGroup.CompareName(x.Key, name))?.Key;
+			tickGroup = GroupsAndTimers.Find(x => x.Key.CompareName(name))?.Key;
 			return tickGroup != null;
 		}
 
@@ -153,11 +143,11 @@ namespace TickSystem
 		/// <param name="name"></param>
 		/// <returns>Whether a matching TickGroup was found.</returns>
 		/// <remarks>
-		/// See <see cref="TickGroup.CompareName"/> for comparision details.
+		/// See <see cref="TickSystemExtensions.CompareName(TickGroup, string)"/> for comparision details.
 		/// </remarks>
 		public static bool Contains(string name)
 		{
-			return GroupsAndTimers.Any(x => TickGroup.CompareName(x.Key, name));
+			return GroupsAndTimers.Any(x => x.Key.CompareName(name));
 		}
 
 		/// <summary>
@@ -168,6 +158,32 @@ namespace TickSystem
 		public static bool Contains(TickGroup tickGroup)
 		{
 			return tickGroup != null && GroupsAndTimers.Any(x => x.Key == tickGroup);
+		}
+
+		// Finds the index of the MutableKeyValuePair that contains the TickGroup
+		private static int IndexOf(TickGroup tickGroup)
+		{
+			List<TickGroup> groups = GroupsAndTimers.Select(x => x.Key).ToList();
+			return groups.IndexOf(tickGroup);
+		}
+
+		// Controls whether Debug.Log() methods are called in class methods.
+		private static bool EnableLogging()
+		{
+			#if UNITY_EDITOR
+			return false;
+			#else
+			return false
+			#endif
+		}
+
+		// Initializes an instance of the TickManager.
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+		private static void Init()
+		{
+			if (_instance != null) return;
+			var inst = new GameObject("TickManager").AddComponent<TickManager>();
+			DontDestroyOnLoad(inst.gameObject);
 		}
 
 		#region Unity Methods
@@ -254,22 +270,5 @@ namespace TickSystem
 		}
 
 		#endregion
-
-		// Finds the index of the MutableKeyValuePair that contains the TickGroup
-		private static int IndexOf(TickGroup tickGroup)
-		{
-			List<TickGroup> groups = GroupsAndTimers.Select(x => x.Key).ToList();
-			return groups.IndexOf(tickGroup);
-		}
-
-		// Controls whether Debug.Log() methods are called in class methods.
-		private static bool EnableLogging()
-		{
-			#if UNITY_EDITOR
-			return false;
-			#else
-			return false
-			#endif
-		}
 	}
 }

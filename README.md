@@ -12,11 +12,36 @@ The Unity Tick System Package provides a robust framework for managing interval-
 
 # Example
 
-Use a `TickGroup` when you want a tick group local to a class:
+Instantiate a new `TickGroup` instance.
 ```csharp
-// Create a new tick group instance with 'name', 'interval', 'enabled', and 'realTime' parameters
 TickGroup myTickGroup = new TickGroup(name: "Tick Group", interval: 0.1f, enabled: true, realTime: true);
-myTickGroup.Add(MyTickCallback);
+```
+
+Or reference a `TickGroupAsset` instance.
+```csharp
+[SerializeField]
+TickGroupAsset myTickGroupAsset;
+```
+
+Handle adding/removing callbacks to `TickGroup` and `TickGroupAsset` instances.
+```csharp
+// Syntax is the same for TickGroups and TickGroupAssets
+
+// Add callback(s)
+void OnEnable()
+{
+    myTickGroup.Add(MyTickCallback);
+    // or
+    myTickGroupAsset.Add(MyTickCallback);
+}
+
+// Remove callback(s)
+void OnDisable()
+{
+    myTickGroup.Remove(MyTickCallback);
+    // or
+    myTickGroupAsset.Remove(MyTickCallback);
+}
 
 // Defining a tick callback
 void MyTickCallback()
@@ -24,89 +49,68 @@ void MyTickCallback()
     // Your periodic update logic here
     Debug.Log("Tick!");
 }
+```
 
-// Assuming this is a Monobehaviour class
+Or you can use `event` syntax for callbacks.
+```csharp
+// Syntax is the same for TickGroups and TickGroupAssets
+
+// Add callback(s)
+void OnEnable()
+{
+    myTickGroup.OnTick += MyTickCallback;
+    // or
+    myTickGroupAsset.OnTick += MyTickCallback;
+}
+
+// Remove callback(s)
+void OnDisable()
+{
+    myTickGroup.OnTick -= MyTickCallback;
+    // or
+    myTickGroupAsset.OnTick -= MyTickCallback;
+}
+
+// Defining a tick callback
+void MyTickCallback()
+{
+    // Your periodic update logic here
+    Debug.Log("Tick!");
+}
+```
+
+When using a `TickGroup`, you should call `Dispose()` once the tick group reference should be discarded.
+
+*(This isn't necessary for `TickGroupAsset` instances, as they handle `Dispose()` internally.)*
+```csharp
 void OnDestroy()
 {
     // Call Dispose() when you are done managing it.
     // Otherwise, it will tick continuously.
     myTickGroup.Dispose();
 }
-````
-
-Use a `TickGroupAsset` when you want a `TickGroup` as an asset reference:
-```csharp
-// Assign and configure a TickGroupAsset in the inspector
-public TickGroupAsset myTickGroup;
-myTickGroup.Add(MyTickCallback);
-
-// Defining a tick callback
-void MyTickCallback()
-{
-    // Your periodic update logic here
-    Debug.Log("Tick!");
-}
-
-// Assuming this is a Monobehaviour class
-void OnDestroy()
-{
-    // Dispose() is automatically called on TickGroupAssets, so no manual intervention is required here.
-}
-````
+```
 
 # Tick Groups
-
-## Layout
-
-`TickGroup` has a relatively simple structure:
-
-```csharp
-// Simplified look into TickGroup class
-public class TickGroup : IDisposable
-{
-    public string Name; // Identifier for group
-
-    public float Interval; // Expected time between each tick
-
-    public bool Enabled; // Whether group can be invoked
-
-    public bool IsRealTime; // Whether Interval is affected by Time.timeScale
-
-
-    public void Add(Action callback) { ... } // Registers a callback
-
-    public void Remove(Action callback) { ... } // Un-registers a callback
-
-    public void Clear() { ... } // Un-registers all callbacks
-
-    public void Invoke() { ... } // Invokes all registered callbacks
-
-    public void Dispose() { ... } // Un-registers all callbacks and stops auto-ticking
-}
-```
-Note:
-- You shouldn't call `Invoke()` manually, as it is called automatically by the `TickManager`.
-- You should call `Dispose()` when you are done with the `TickGroup` instance.
-- You don't have to call `Dispose()` on `TickGroupAsset` instances.
 
 ## Constructors
 
 Several constructors are provided to assist with different use cases:
-
 ```csharp
-public TickGroup(string name, float interval, bool? enabled = null, bool? realTime = null)
+public TickGroup(string name, float interval, bool? enabled = null, bool? realTime = null) { ... };
 
-public TickGroup(GroupParams parameters)
+public TickGroup(GroupParams parameters) { ... };
 
-public TickGroup(GroupParams parameters, IEnumerable<Action> callbacks)
+public TickGroup(GroupParams parameters, IEnumerable<Action> callbacks) { ... };
 
-public TickGroup(GroupParams parameters, params Action[] callbacks)
+public TickGroup(GroupParams parameters, params Action[] callbacks) { ... };
 
-public TickGroup(IEnumerable<Action> callbacks)
+public TickGroup(IEnumerable<Action> callbacks) { ... };
 
-public TickGroup(params Action[] callbacks)
+public TickGroup(params Action[] callbacks) { ... };
 ```
-Note:
+
+**Note:**
 - `GroupParams` is a struct containing the same `name`, `interval`, `enabled`, and `realTime` variables as in `TickGroup`.
 
 # Tick Manager
@@ -114,11 +118,9 @@ Note:
 You can find any existing `TickGroups` by name through the `TickManager` class:
 ```csharp
 // Finds the first TickGroup with the matching name.
-// Returns the matching TickGroup, 'null' otherwise.
 public static TickGroup Find(string name)
 
 // Finds the first TickGroup with the matching name.
-// Returns 'true' if the TickGroup was found, 'false' otherwise.
 public static bool Find(string name, out TickGroup tickGroup)
 ```
 

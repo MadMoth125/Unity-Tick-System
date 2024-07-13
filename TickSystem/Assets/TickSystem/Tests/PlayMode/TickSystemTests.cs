@@ -78,7 +78,7 @@ namespace TickSystem
 			TickManager.Enabled = true;
 			int tickCount = 0;
 			TickGroup group = new TickGroup(GroupParams.Default);
-			group.Add(TestListenerMethod);
+			group.OnTick += TestListenerMethod;
 
 			// Act
 			yield return new WaitForSeconds(GetForgivingInterval(group.GetParameters()));
@@ -102,7 +102,7 @@ namespace TickSystem
 			TickManager.Enabled = false;
 			int tickCount = 0;
 			TickGroup group = new TickGroup(GroupParams.Default);
-			group.Add(TestListenerMethod);
+			group.OnTick += TestListenerMethod;
 
 			// Act
 			yield return new WaitForSeconds(GetForgivingInterval(group.GetParameters()));

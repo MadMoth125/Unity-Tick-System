@@ -11,14 +11,16 @@ namespace TickSystem
 	public class TickGroup : IDisposable
 	{
 		/// <summary>
-		/// The actions to be invoked when the group ticks.
+		/// Event when TickGroup should invoke callbacks.
 		/// </summary>
-		internal IReadOnlyList<Action> Callbacks => _callbacks;
-
-		/// <summary>
-		/// The number of callbacks in the group.
-		/// </summary>
-		public int Count => _callbacks.Count;
+		/// <remarks>
+		/// Wraps <see cref="Add"/> and <see cref="Remove"/> for event syntax.
+		/// </remarks>
+		public event Action OnTick
+		{
+			add => Add(value);
+			remove => Remove(value);
+		}
 
 		/// <summary>
 		/// The name of the TickGroup.
@@ -41,7 +43,21 @@ namespace TickSystem
 		/// </summary>
 		public bool RealTime;
 
+		/// <summary>
+		/// The number of callbacks in the TickGroup.
+		/// </summary>
+		public int Count => _callbacks.Count;
+
+		/// <summary>
+		/// Whether the TickGroup is still being referenced by the TickManager.
+		/// </summary>
+		/// <remarks>
+		/// Typically false once <see cref="Dispose"/> has been called.
+		/// </remarks>
+		public bool Valid => !_disposed && TickManager.Contains(this);
+
 		private readonly List<Action> _callbacks;
+		private bool _disposed = false;
 
 		#region Constructors
 
@@ -49,8 +65,8 @@ namespace TickSystem
 		{
 			Name = name;
 			Interval = interval;
-			Enabled = enabled ?? true;
-			RealTime = realTime ?? false;
+			Enabled = enabled ?? GroupParams.Default.enabled;
+			RealTime = realTime ?? GroupParams.Default.realTime;
 			TickManager.Add(this);
 		}
 
@@ -131,20 +147,9 @@ namespace TickSystem
 		/// </summary>
 		public void Dispose()
 		{
+			_disposed = true;
 			TickManager.Remove(this);
 			Clear();
-		}
-
-		/// <summary>
-		/// Checks if the TickGroup name matches the provided name.
-		/// </summary>
-		/// <param name="group"></param>
-		/// <param name="name"></param>
-		/// <returns>Whether the names are equal.</returns>
-		public static bool CompareName(TickGroup group, in string name)
-		{
-			return group != null &&
-			       group.Name.Trim().Replace(" ", "") == name.Trim().Replace(" ", "");
 		}
 
 		/// <summary>
@@ -157,11 +162,7 @@ namespace TickSystem
 		internal void Invoke()
 		{
 			if (!Enabled) return;
-
-			for (int i = _callbacks.Count - 1; i >= 0; i--)
-			{
-				_callbacks?[i]?.Invoke();
-			}
+			_callbacks.InvokeCallbacksReverse();
 		}
 	}
 }

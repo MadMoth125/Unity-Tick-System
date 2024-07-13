@@ -47,20 +47,21 @@ namespace TickSystem
 		/// <param name="parameters"></param>
 		public static void SetParameters(this TickGroup tickGroup, in GroupParams parameters)
 		{
-			parameters.Deconstruct(out tickGroup.Name, out tickGroup.Interval, out tickGroup.Enabled, out tickGroup.RealTime);
+			parameters.Deconstruct(out tickGroup.Name, out tickGroup.Interval,
+			                       out tickGroup.Enabled, out tickGroup.RealTime);
 		}
 
 		/// <summary>
 		/// Sets the TickGroupAsset parameters to the provided ones.
 		/// </summary>
 		/// <param name="tickGroup"></param>
-		/// <param name="tickRate"></param>
+		/// <param name="interval"></param>
 		/// <param name="enabled"></param>
 		/// <param name="realTime"></param>
-		public static void SetParameters(this TickGroupAsset tickGroup, int? tickRate = null,
+		public static void SetParameters(this TickGroupAsset tickGroup, float? interval = null,
 		                                 bool? enabled = null, bool? realTime = null)
 		{
-			if (tickRate != null) tickGroup.TickRate = tickRate.Value;
+			if (interval != null) tickGroup.Interval = interval.Value;
 			if (enabled != null) tickGroup.Enabled = enabled.Value;
 			if (realTime != null) tickGroup.RealTime = realTime.Value;
 		}

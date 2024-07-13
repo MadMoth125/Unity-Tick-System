@@ -33,6 +33,20 @@ namespace TickSystem
 		public string Name => name;
 
 		/// <summary>
+		/// The interval between ticks.
+		/// </summary>
+		public float Interval
+		{
+			get => interval;
+			set
+			{
+				if (Mathf.Approximately(interval, Mathf.Max(0f, value))) return;
+				interval = Mathf.Max(0f, value);
+				GetTickGroup().Interval = interval;
+			}
+		}
+
+		/// <summary>
 		/// Whether the TickGroup is enabled.
 		/// </summary>
 		public bool Enabled
@@ -61,41 +75,21 @@ namespace TickSystem
 			}
 		}
 
-		/// <summary>
-		/// The number of ticks per second.
-		/// </summary>
-		public int TickRate
-		{
-			get => tickRate;
-			set
-			{
-				int max = Mathf.Max(0, value);
-				if (tickRate == max) return;
-				tickRate = max;
-				GetTickGroup().Interval = tickRate == 0 ? 0 : 1f / tickRate;
-			}
-		}
-
-		/// <summary>
-		/// The interval between ticks.
-		/// </summary>
-		public float Interval => 1f / tickRate;
-
 		#endregion
 
+		[Tooltip("The interval between ticks.")]
+		[SerializeField]
+		private float interval = 0.1f;
+
+		[Space(5)]
 		[Tooltip("Whether the tick group is enabled.")]
 		[SerializeField]
 		private bool enabled = true;
 
-		[Tooltip("Whether the tick group functions in real time.\n" +
-		         "If false, it uses game time.")]
+		[Tooltip("true = updated with Time.unscaledDeltaTime,.\n" +
+		         "false = updated with Time.deltaTime*.")]
 		[SerializeField]
 		private bool realTime = false;
-
-		[Tooltip("The number of ticks per second.")]
-		[Range(0, 60)]
-		[SerializeField]
-		private int tickRate = 20;
 
 		private TickGroup _tickGroup;
 		private GroupParams _groupParams;
@@ -129,16 +123,17 @@ namespace TickSystem
 		#region Unity Methods
 
 		#if UNITY_EDITOR
-		private void OnValidate()
+		protected virtual void OnValidate()
 		{
 			if (!Application.isPlaying || _tickGroup == null) return;
 			GetTickGroup().SetParameters(GetGroupParams());
 		}
+
 		#endif
 
-		private void OnEnable() => _tickGroup = new TickGroup(GetGroupParams());
+		protected virtual void OnEnable() => _tickGroup = new TickGroup(GetGroupParams());
 
-		private void OnDisable() => _tickGroup?.Dispose();
+		protected virtual void OnDisable() => _tickGroup?.Dispose();
 
 		#endregion
 	}

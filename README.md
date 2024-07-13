@@ -10,7 +10,7 @@ The Unity Tick System Package provides a robust framework for managing interval-
 - **Real-Time and Game-Time:** Decide if you want individual `TickGroup` intervals affected by `Time.timeScale`.
 - **Automatic:** `TickGroup` instances are updated automatically through the `TickManager`.
 
-# Example
+## Examples
 
 Instantiate a new `TickGroup` instance.
 ```csharp
@@ -23,35 +23,7 @@ Or reference a `TickGroupAsset` instance.
 TickGroupAsset myTickGroupAsset;
 ```
 
-Handle adding/removing callbacks to `TickGroup` and `TickGroupAsset` instances.
-```csharp
-// Syntax is the same for TickGroups and TickGroupAssets
-
-// Add callback(s)
-void OnEnable()
-{
-    myTickGroup.Add(MyTickCallback);
-    // or
-    myTickGroupAsset.Add(MyTickCallback);
-}
-
-// Remove callback(s)
-void OnDisable()
-{
-    myTickGroup.Remove(MyTickCallback);
-    // or
-    myTickGroupAsset.Remove(MyTickCallback);
-}
-
-// Defining a tick callback
-void MyTickCallback()
-{
-    // Your periodic update logic here
-    Debug.Log("Tick!");
-}
-```
-
-Or you can use `event` syntax for callbacks.
+Handle adding/removing callbacks to `TickGroup` and `TickGroupAsset` instances with `event` syntax.
 ```csharp
 // Syntax is the same for TickGroups and TickGroupAssets
 
@@ -79,6 +51,36 @@ void MyTickCallback()
 }
 ```
 
+Or you can use `Add(Action)`/`Remove(Action)` if you prefer.
+
+*(The `event` syntax is a wrapper around `Add(Action)`/`Remove(Action)`, so there is no functional difference between them.)*
+```csharp
+// Syntax is the same for TickGroups and TickGroupAssets
+
+// Add callback(s)
+void OnEnable()
+{
+    myTickGroup.Add(MyTickCallback);
+    // or
+    myTickGroupAsset.Add(MyTickCallback);
+}
+
+// Remove callback(s)
+void OnDisable()
+{
+    myTickGroup.Remove(MyTickCallback);
+    // or
+    myTickGroupAsset.Remove(MyTickCallback);
+}
+
+// Defining a tick callback
+void MyTickCallback()
+{
+    // Your periodic update logic here
+    Debug.Log("Tick!");
+}
+```
+
 When using a `TickGroup`, you should call `Dispose()` once the tick group reference should be discarded.
 
 *(This isn't necessary for `TickGroupAsset` instances, as they handle `Dispose()` internally.)*
@@ -90,8 +92,6 @@ void OnDestroy()
     myTickGroup.Dispose();
 }
 ```
-
-# Tick Groups
 
 ## Constructors
 
@@ -113,9 +113,11 @@ public TickGroup(params Action[] callbacks) { ... };
 **Note:**
 - `GroupParams` is a struct containing the same `name`, `interval`, `enabled`, and `realTime` variables as in `TickGroup`.
 
-# Tick Manager
+## Tick Manager
 
-You can find any existing `TickGroups` by name through the `TickManager` class:
+When a new `TickGroup` instance is created, it is automatically added to the `TickManager`, which is responsible for updating and invoking every group it has a reference to.
+
+If you don't have direct access to a tick group, you can try to find it through the `TickManager` by the specified name of the `TickGroup`.
 ```csharp
 // Finds the first TickGroup with the matching name.
 public static TickGroup Find(string name)

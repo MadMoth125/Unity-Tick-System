@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c08e34e21d72c6b4cac552ab4d5712d9, type: 3}
   m_Name: Example_TickGroupA
   m_EditorClassIdentifier: 
-  active: 1
-  useRealTime: 0
-  tickRate: 5
+  interval: 0.2
+  enabled: 1
+  realTime: 0

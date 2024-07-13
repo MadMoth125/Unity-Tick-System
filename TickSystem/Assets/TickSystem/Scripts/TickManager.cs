@@ -243,8 +243,7 @@ namespace TickSystem
 				float delta = GroupsAndTimers[i].Key.RealTime ? Time.unscaledDeltaTime : Time.unscaledDeltaTime * Time.timeScale;
 
 				// Check if we are still below interval
-				if (GroupsAndTimers[i].Value + (delta * 0.5f) <= GroupsAndTimers[i].Key.Interval &&
-				    GroupsAndTimers[i].Value + delta <= GroupsAndTimers[i].Key.Interval)
+				if (GroupsAndTimers[i].Value + delta < GroupsAndTimers[i].Key.Interval)
 				{
 					GroupsAndTimers[i].Value += delta;
 					continue;

@@ -222,11 +222,8 @@ namespace TickSystem
 			// Using a for-loop to avoid the garbage allocation of a foreach-loop
 			for (int i = 0; i < GroupsAndTimers.Count; i++)
 			{
-				// Skipping groups that are null, disabled, or have 0 callbacks.
-				if (GroupsAndTimers[i] == null ||
-				    GroupsAndTimers[i].Key == null ||
-				    GroupsAndTimers[i].Key.Count == 0 ||
-				    GroupsAndTimers[i].Key.Enabled == false)
+				// Skipping groups that are null or have 0 callbacks.
+				if (GroupsAndTimers[i] == null || GroupsAndTimers[i].Key == null || GroupsAndTimers[i].Key.Count == 0)
 				{
 					continue;
 				}
